@@ -1,19 +1,25 @@
-export const items = [
+import { itemTypes } from "@/types/types";
+
+export const items : itemTypes[] = [
     {
       name:"Shop",
       trigger:true,
-      links :["Links"]
+      links :["Links"],
+      href:"#"
     },
     {
       name:"On Sale",
-       trigger:false
+       trigger:false,
+       href:"#"
     },
     {
       name:"New Arrivals",
-      trigger:false
+      trigger:false,
+      href:"newArrival"
     },
     {
       name:"Brands" ,
-      trigger:false
+      trigger:false,
+      href:"#"
     }
   ]

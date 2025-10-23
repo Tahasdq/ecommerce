@@ -2,18 +2,17 @@
 import React from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
-import { Counter } from "../ui/shadcn-io/counter";
 import { CountingNumber } from "../ui/shadcn-io/counting-number";
+import Image from "next/image";
 
 export default function Hero() {
-const [number2, setNumber2] = React.useState(1000);
 
   return (
     <div>
       <Card>
-        <CardContent>
-          <section className="flex flex-col gap-6">
-            <div className=" font-bold text-4xl">
+        <CardContent className="flex flex-col  gap-10 md:flex-row md:items-center md:justify-center h-screen">
+          <section className="flex flex-col gap-6  justify-center w-full md:w-3/5 ">
+            <div className=" font-bold text-4xl md:text-6xl ">
               {" "}
               FIND CLOTHES THAT MATCHES YOUR STYLE
             </div>
@@ -22,48 +21,53 @@ const [number2, setNumber2] = React.useState(1000);
               designed to bring out your individuality and cater to your sense
               of style.
             </p>
-            <Button className="rounded-4xl py-7" variant="default">
+            <div className="flex justify-center">
+
+           
+            <Button className="rounded-4xl py-7 w-80 " variant="default">
               Shop Now
             </Button>
+             </div>
             <div>
-        <div className="flex flex-wrap justify-center gap-2">
-              <div className="flex flex-col items-center gap-3">
-                <div>
-                <CountingNumber
-                  number={1000}
-                  inView={true}
-                  transition={{ stiffness: 100, damping: 30 }}
-                />
-                <span>+</span>
-                </div>
-                 <div>international brands</div>
-              </div>
-              <div className="flex flex-col items-center gap-3">
+              <div className="flex flex-wrap justify-center gap-2">
+                <div className="flex flex-col items-center gap-3">
                   <div>
-                <CountingNumber
-                  number={1000}
-                  inView={true}
-                  transition={{ stiffness: 100, damping: 30 }}
-                />
-                <span>+</span>
+                    <CountingNumber
+                      number={1000}
+                      inView={true}
+                      transition={{ stiffness: 100, damping: 30 }}
+                    />
+                    <span>+</span>
+                  </div>
+                  <div>international brands</div>
                 </div>
-                 <div>international brands</div>
-              </div>
-              <div className="flex flex-col items-center gap-3">
-                <div>
-                <CountingNumber
-                  number={1000}
-                  inView={true}
-                  transition={{ stiffness: 100, damping: 30 }}
-                />
-                <span>+</span>
+                <div className="flex flex-col items-center gap-3">
+                  <div>
+                    <CountingNumber
+                      number={1000}
+                      inView={true}
+                      transition={{ stiffness: 100, damping: 30 }}
+                    />
+                    <span>+</span>
+                  </div>
+                  <div>international brands</div>
                 </div>
-                 <div>international brands</div>
+                <div className="flex flex-col items-center gap-3">
+                  <div>
+                    <CountingNumber
+                      number={1000}
+                      inView={true}
+                      transition={{ stiffness: 100, damping: 30 }}
+                    />
+                    <span>+</span>
+                  </div>
+                  <div>international brands</div>
+                </div>
               </div>
-</div>
             </div>
           </section>
-          <section className="right bg">iamge</section>
+          <section className="right bg-[url(https://next-ecommerce-shopco.vercel.app/images/header-res-homepage.png)] bg-cover bg-center bg-no-repeat  w-full md:w-2/5 h-full ">
+          </section>
         </CardContent>
       </Card>
     </div>
