@@ -1,4 +1,4 @@
-import { itemTypes } from "@/types/types";
+import { itemTypes, SelectedColor, SelectedSize } from "@/types/types";
 
 export const items : itemTypes[] = [
     {
@@ -23,3 +23,30 @@ export const items : itemTypes[] = [
       href:"#"
     }
   ]
+
+export const sizes : SelectedSize[] = [
+    {id:1,
+      sizeName:"small"
+    },
+    { id:2,
+      sizeName:"medium"
+    },
+    {
+      id:3,
+      sizeName:"large"
+    }
+  ]
+export const colors: SelectedColor[]= [
+    {
+      id:1,
+      colorName:"black"
+    },
+    {
+      id:2,
+      colorName:"red-400"
+    },
+    {
+      id:3,
+      colorName:"green-700"
+    }
+  ] 
