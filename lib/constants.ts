@@ -39,14 +39,14 @@ export const sizes : SelectedSize[] = [
 export const colors: SelectedColor[]= [
     {
       id:1,
-      colorName:"black"
+      colorName:"red"
     },
     {
       id:2,
-      colorName:"red-400"
+      colorName:"black"
     },
     {
       id:3,
-      colorName:"green-700"
+      colorName:"green"
     }
   ] 

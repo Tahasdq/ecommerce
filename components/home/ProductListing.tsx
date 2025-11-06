@@ -3,10 +3,7 @@ import Image from "next/image";
 import { Card, CardContent } from "../ui/card";
 import { useRouter } from "next/navigation";
 import { id } from "@/types/types";
-
-export default function ProductListing() {
-  const router = useRouter();
-  const items = [
+export const products = [
     {
       description: "T shirt with Tape Details",
       star: "******",
@@ -32,13 +29,16 @@ export default function ProductListing() {
       id: "4",
     },
   ];
+export default function ProductListing() {
+  const router = useRouter();
+  
   const navigateToProduct = (id : id) => {
     router.push(`product/${id}`);
   };
   return (
     <Card className="border-0 shadow-none">
       <CardContent className="flex gap-10 justify-center overflow-x-auto">
-        {items?.map((item, idx) => (
+        {products?.map((item, idx) => (
           // <Link href={`product/${item.id}`}>
           <Card
             key={idx}

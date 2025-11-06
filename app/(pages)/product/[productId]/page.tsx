@@ -4,26 +4,41 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Counter } from "@/components/ui/shadcn-io/counter";
 import { colors, sizes } from "@/lib/constants";
+import { useAppDispatch } from "@/lib/redux/hooks/hooks";
 import { id, SelectedColor, SelectedSize } from "@/types/types";
 import { Check } from "lucide-react";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import React, { useState } from "react";
+import {addToCart} from "@/lib/redux/features/cartSlice"
+import { products } from "@/components/home/ProductListing";
 
+const  PRODUCT_PRICE = "1200" 
 
 export default function Product() {
-
+  const [selectedColor,setSelectedColor] = useState<SelectedColor>({})
+  const [selectedSize,setSelectedSize] = useState<SelectedSize>({})
   const [qauntity, setQuantity] = React.useState(1);
-  const params = useParams();
+  const [error , setError] = useState({
+    sizeSelectionError:false,
+    colorSelctionError:false
+  })
+  const params = useParams()
+  const dispatch = useAppDispatch()
 
+  const {productId}= params
 
+ // checking if product user hit on url is correct or not
+  const validProduct = products.find((product)=>product.id==String(productId))
+  if(!validProduct){
+    return notFound()
+  }
+  
   const handleMinMaxChange = (newValue: number) => {
     setQuantity(Math.max(1, Math.min(10, newValue)));
   };
  
   
-  const [selectedColor,setSelectedColor] = useState<SelectedColor>({})
-  const [selectedSize,setSelectedSize] = useState<SelectedSize>({})
   const handleColor  = (id:id)=>{
      if(!id) return
     const foundColor = colors.find((color)=>color.id ==id)
@@ -31,6 +46,7 @@ export default function Product() {
     if(foundColor){
       setSelectedColor(foundColor)
     }
+    setError((error)=>({...error ,colorSelctionError:false}))
   }
   const handleSize  = (id:id)=>{
     if(!id ) return
@@ -39,11 +55,34 @@ export default function Product() {
    if(foundSizes){
    setSelectedSize(foundSizes)
    }
+   setError((error)=>({...error ,sizeSelectionError:false}))
   }
+
+  // validating color and size exist when hitting addItemsToCart method
+  const validateItems = ()=>{
+    if((Object.keys(selectedSize).length===0)){
+      setError((error)=>({...error , sizeSelectionError:true}))
+    }
+    if((Object.keys(selectedColor).length===0)){
+      setError((error)=>({...error , colorSelctionError:true}))
+    }
+  }
+
   const addItemsToCart = ()=>{
+    validateItems()
     console.log("selectedColor" , selectedColor)
     console.log("selectedSize" , selectedSize)
     console.log("SelectedQuantity" , qauntity)
+    if(selectedSize.sizeName &&selectedColor.colorName && qauntity && PRODUCT_PRICE ){
+    const payload =  {
+        id: String(productId),
+        name: String(productId),
+        size: selectedSize.sizeName,
+        color: selectedColor.colorName,
+        price: Number(PRODUCT_PRICE),
+        quantity: Number(qauntity),
+    };
+    dispatch(addToCart(payload));}
   }
 
   return (
@@ -67,7 +106,7 @@ export default function Product() {
             </h2>
           </div>
           <div>******</div>
-          <div>$120</div>
+          <div>{PRODUCT_PRICE} PKR</div>
           <p>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat
             cupiditate explicabo sequi consectetur maxime? Excepturi magnam
@@ -78,8 +117,13 @@ export default function Product() {
             <div>Choose Colors</div>
             <div className="flex gap-4">
              {colors?.map((color , idx)=>(
-                <div onClick={()=>handleColor(color.id ?? "")} key={idx} className={`flex justify-center items-center  border-black border-2 rounded-full  h-10 w-10  bg-${color.colorName} cursor-pointer`}>{color?.id==selectedColor?.id?<Check size="30px" color="white"/> : null}</div>
+                <div onClick={()=>handleColor(color.id ?? "")} key={idx}
+                style={{backgroundColor :color.colorName}}
+                className={`flex justify-center items-center  border-black border-2 rounded-full  h-10 w-10   cursor-pointer`}>{color?.id==selectedColor?.id?<Check size="30px" color="white"/> : null}</div>
              )) }
+             {
+              error.colorSelctionError && <p className="text-bold text-red-800">please select color</p>
+             }
             </div>
           </div>
           <div className="flex flex-col gap-4">
@@ -88,6 +132,9 @@ export default function Product() {
              {sizes?.map((size)=>(
                 <div onClick={()=>handleSize(size.id ?? "")} key={size.id} className={`flex justify-center items-center  border-black border-2 rounded-full  px-4 py-2 cursor-pointer ${size.id==selectedSize?.id ? "bg-black text-white" : ""}`}>{size.sizeName}</div>
              )) }
+              {
+              error.sizeSelectionError && <p className="text-bold text-red-800">please select size</p>
+             }
             </div>
           </div>
           <div className="flex justify-between item ">

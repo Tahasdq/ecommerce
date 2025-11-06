@@ -4,28 +4,52 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Counter } from "@/components/ui/shadcn-io/counter";
+import { deleteItemsFromCart, item, updateCart } from "@/lib/redux/features/cartSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks/hooks";
 import {  MoveRight, Trash } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 
 
 export default function Cart() {
+  const data = useAppSelector((state)=>state.cartReducer)
+  const dispatch = useAppDispatch()
 
-  
-  const [qauntity, setQuantity] = useState(1);
-  const handleMinMaxChange = (newValue: number) => {
-    setQuantity(Math.max(1, Math.min(10, newValue)));
-  };
-  console.log("cart page");
+  const {cartItems ,totalPrice } = data
+
+  // const [qauntity, setQuantity] = useState<{quantity:number , id:string}[]>( cartItems.map((item) => ({
+  //   quantity: item.quantity,
+  //   id: item.id,
+  // })));
+
+  const handleQuantity = (id:string,newValue: number) => {
+    // setQuantity((quantity)=>quantity.map((item)=>(
+    //   item.id==id? {...item , quantity : Math.max(1 , newValue) }: item
+    // )))
+    dispatch(updateCart({id,quantity:newValue}))
+
+  }
+  const deleteItems = (arg:item)=>{
+    console.log("arg" , arg)
+    dispatch(deleteItemsFromCart(arg))
+  }
+ 
+
   return (
     <Card>
       <Wrapper className="flex flex-col items-start gap-10">
-        <div className="flex justify-center px-6">
+        { cartItems.length >0 ? 
+          <>
+          <div className="flex justify-center px-6">
           <h2 className="font-bold text-3xl md:text-5xl">your cart</h2>
         </div>
         <div className="flex flex-col md:flex-row w-full">
           <CardContent className="w-full md:w-2.5/5">
-            <Card className="py-3">
+            {
+             cartItems && cartItems?.map((item)=>{
+                  return(
+                    <Card className="py-3">
               <CardContent className="flex gap-3">
                 <div className="flex-1 product-image relative rounded-3xl overflow-hidden cursor-pointer min-w-20 min-h-20 py-0">
                   <Image
@@ -37,24 +61,27 @@ export default function Cart() {
                   />
                 </div>
                 <div className="flex-2">
-                  <div className="text-sm">Polo shirt</div>
-                  <div>Size: large</div>
-                  <div>Color: green</div>
-                  <div>Cost: $180</div>
+                  <div className="text-sm">{item.name}</div>
+                  <div>Size: {item.size}</div>
+                  <div>Color: {item.color}</div>
+                  <div>Cost: {totalPrice}</div>
                 </div>
                 <div className="flex-1  flex flex-col justify-between">
                   <div className="flex justify-end">
-                    <Trash className="cursor-pointer" />
+                    <Trash onClick={()=>deleteItems(item)} className="cursor-pointer" />
                   </div>
                   <Counter
                     buttonProps={{ size: "sm" }}
-                    number={qauntity}
-                    setNumber={handleMinMaxChange}
+                    number={item.quantity}
+                    setNumber={(value)=>handleQuantity(item.id , value)}
                     className="flex justify-center"
                   />
                 </div>  
               </CardContent>
             </Card>
+                  )
+              })
+              }
           </CardContent>
           <CardContent className="w-full md:w-2.5/5 flex gap-4 flex-col  mt-10 md:mt-0">
             <div className="flex justify-start ">
@@ -67,7 +94,7 @@ export default function Cart() {
               </div>
               <div className="flex flex-row justify-between">
                 <div>Delivery Free</div>
-                <div>$180</div>
+                <div>$0</div>
               </div>
               <Separator className="my-3" />
               <div className="flex flex-row justify-between font-bold">
@@ -81,6 +108,9 @@ export default function Cart() {
             </div>
           </CardContent>
         </div>
+        </> : 
+        <p>not items found</p>
+        }
       </Wrapper>
     </Card>
   );

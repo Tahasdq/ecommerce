@@ -17,23 +17,38 @@ import { useSidebar } from "@/components/ui/sidebar";
 import { items } from "@/lib/constants";
 import SearchBar from "../SearchBar/SearchBar";
 import Wrapper from "../Wrapper/Wrapper";
+import { Badge } from "@/components/ui/badge";
+import { useAppSelector } from "@/lib/redux/hooks/hooks";
+import { useRouter } from "next/navigation";
+
+
 
 const Header = () => {
   const {toggleSidebar} = useSidebar()
+  const router = useRouter()
+ 
+  const cartItems = useAppSelector((state)=>state.cartReducer.cartItems)
+  const cartItemsLength  = cartItems.length
   return (
     <Card className="  rounded-none">
       <Wrapper className="flex flex-row justify-between">
-      <CardContent className="flex flex-row items-center gap-2   ">
-        <Menu className="md:hidden cursor-pointer"  onClick={toggleSidebar}/>
-        <Image width={70} height={60} alt="logo" src={logo} />
-        <Navbar className="hidden  md:block" />
-      </CardContent>
-      <CardContent className="flex flex-row gap-7 relative  items-center">
-        <SearchBar/>      
-        <ShoppingCart className="w-7 h-7 md:h-10 md:w-10 cursor-pointer"  />
-        <CircleUserRound className="w-7 h-7 md:h-10 md:w-10 cursor-pointer"/>
-      </CardContent>
-    </Wrapper>
+        <CardContent className="flex flex-row items-center gap-2   ">
+          <Menu className="md:hidden cursor-pointer" onClick={toggleSidebar} />
+          <Image width={70} height={60} alt="logo" src={logo} />
+          <Navbar className="hidden  md:block" />
+        </CardContent>
+        <CardContent className="flex flex-row gap-7 relative  items-center">
+          <SearchBar />
+          <div onClick={()=> router.push("/cart")} className="relative ">
+           <Badge className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums absolute left-4 -top-3">
+            {cartItemsLength}
+           </Badge>
+            <ShoppingCart  size={24} className=" cursor-pointer" />
+          </div>
+          <CircleUserRound   size={30} className="inline-block cursor-pointer" /> {/* need to understadn this shit no matter what??? */}
+          
+        </CardContent>
+      </Wrapper>
     </Card>
   );
 };
