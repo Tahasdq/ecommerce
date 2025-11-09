@@ -18,17 +18,11 @@ export default function Cart() {
 
   const {cartItems ,totalPrice } = data
 
-  // const [qauntity, setQuantity] = useState<{quantity:number , id:string}[]>( cartItems.map((item) => ({
-  //   quantity: item.quantity,
-  //   id: item.id,
-  // })));
-
-  const handleQuantity = (id:string,newValue: number) => {
+  const handleQuantity = (id:string,newValue: number,variantId:string) => {
     // setQuantity((quantity)=>quantity.map((item)=>(
     //   item.id==id? {...item , quantity : Math.max(1 , newValue) }: item
     // )))
-    dispatch(updateCart({id,quantity:newValue}))
-
+    dispatch(updateCart({id,quantity:newValue,variantId}))
   }
   const deleteItems = (arg:item)=>{
     console.log("arg" , arg)
@@ -49,7 +43,7 @@ export default function Cart() {
             {
              cartItems && cartItems?.map((item)=>{
                   return(
-                    <Card className="py-3">
+            <Card className="py-3">
               <CardContent className="flex gap-3">
                 <div className="flex-1 product-image relative rounded-3xl overflow-hidden cursor-pointer min-w-20 min-h-20 py-0">
                   <Image
@@ -61,10 +55,10 @@ export default function Cart() {
                   />
                 </div>
                 <div className="flex-2">
-                  <div className="text-sm">{item.name}</div>
+                  <div className="text-sm">Product Name: {item.name}</div>
                   <div>Size: {item.size}</div>
                   <div>Color: {item.color}</div>
-                  <div>Cost: {totalPrice}</div>
+                  <div>Cost: {item.price * item.quantity}</div>
                 </div>
                 <div className="flex-1  flex flex-col justify-between">
                   <div className="flex justify-end">
@@ -73,7 +67,7 @@ export default function Cart() {
                   <Counter
                     buttonProps={{ size: "sm" }}
                     number={item.quantity}
-                    setNumber={(value)=>handleQuantity(item.id , value)}
+                    setNumber={(value)=>handleQuantity(item.id , value , item.variantId)}
                     className="flex justify-center"
                   />
                 </div>  
@@ -90,7 +84,7 @@ export default function Cart() {
             <div className="flex  flex-col justify-between gap-5 ">
               <div className="flex flex-row justify-between">
                 <div>Subtotal</div>
-                <div>$180</div>
+                <div>{totalPrice}</div>
               </div>
               <div className="flex flex-row justify-between">
                 <div>Delivery Free</div>
@@ -99,7 +93,7 @@ export default function Cart() {
               <Separator className="my-3" />
               <div className="flex flex-row justify-between font-bold">
                 <div>Total</div>
-                <div>$180</div>
+                <div>{totalPrice}</div>
               </div>
               <Button className="cursor-pointer  sm:px-40 sm:py-5 md:px-20 md:py-6  lg:px-40  rounded-3xl  flex justify-center items-center gap-2">
                 <div className="text-xl">Add to cart</div>

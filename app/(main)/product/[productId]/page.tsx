@@ -67,13 +67,16 @@ export default function Product() {
       setError((error)=>({...error , colorSelctionError:true}))
     }
   }
-
+  const createVariantId =(productId :string,productName:string, productColor:string,  productSize:string)=>{
+    return `${productId}${productName}${productColor}${productSize}`
+  } 
   const addItemsToCart = ()=>{
     validateItems()
     console.log("selectedColor" , selectedColor)
     console.log("selectedSize" , selectedSize)
     console.log("SelectedQuantity" , qauntity)
     if(selectedSize.sizeName &&selectedColor.colorName && qauntity && PRODUCT_PRICE ){
+
     const payload =  {
         id: String(productId),
         name: String(productId),
@@ -81,6 +84,7 @@ export default function Product() {
         color: selectedColor.colorName,
         price: Number(PRODUCT_PRICE),
         quantity: Number(qauntity),
+        variantId:createVariantId(String(productId) , String(productId),selectedColor.colorName,selectedSize.sizeName )
     };
     dispatch(addToCart(payload));}
   }

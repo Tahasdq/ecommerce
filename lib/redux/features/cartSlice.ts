@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-
 export interface item {
+    variantId:string
     id:string;
     name:string;
     color:string;
@@ -24,12 +24,11 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addToCart: (state, action: PayloadAction<item>) => {
-      const { quantity, price, color ,size ,id } = action?.payload;
-      console.log("action",action)
-      // console.log(" action?.payload" ,  action?.payload)
+      const { quantity, price ,id,variantId } = action?.payload;
       const totalPrice = quantity * (price)
-      const itemExists = state.cartItems.some((item) => item.id === id && item.color ==color && item.size ==size);
-      console.log("itemExists" , itemExists)
+      const itemExists = state.cartItems.some((item) => item.variantId == variantId );
+
+      
       if(itemExists){
       state.cartItems = state.cartItems.map((item) =>
         item.id == id ? {...item, quantity :item.quantity + quantity} :  item
@@ -37,23 +36,36 @@ const cartSlice = createSlice({
       else{
         state.cartItems = [...state.cartItems , action.payload]
       }
+      console.log("totalPrice" , totalPrice)
       state.totalPrice += totalPrice;
     },
     deleteItemsFromCart : (state , action :PayloadAction<item>) =>{
-      const {color,size, id} = action.payload
-      const itemFound  = state.cartItems.find((item)=>(item.id == id && item.color ==color && item.size ==size))
+      const { variantId ,id} = action.payload
+      const itemFound  = state.cartItems.find((item)=>item.variantId==variantId && item.id==id)
+
       if(itemFound){
-        state.cartItems = state.cartItems.filter((item)=>item !== itemFound)// matlab jo ye condition true karjai usko false krky remove krdo
-      state.totalPrice= state.totalPrice - itemFound?.price
+      state.cartItems = state.cartItems.filter((item)=>item !== itemFound)// matlab jo ye condition true karjai usko false krky remove krdo
+      console.log(itemFound?.price *itemFound?.quantity)
+      state.totalPrice= state.totalPrice - (itemFound?.price *itemFound?.quantity)
       }
     },
-    updateCart : (state,action:PayloadAction<{id:string , quantity:number}>)=>{
+    updateCart : (state,action:PayloadAction<{id:string , quantity:number , variantId:string}>)=>{
+      const{id , variantId,quantity} = action.payload
+      const itemId = id
+      const itemQuantity = quantity //new value for quanitity
+
       state.cartItems = state.cartItems.map((item)=>{
-        if(item.id ==action.payload.id){
-          return{...item  , quantity:Math.max(1,action.payload.quantity)}
+        if(item.id ==itemId && item.variantId ==variantId){
+          if(itemQuantity > item.quantity){ //if its greater just increase it by an item price
+            state.totalPrice= state.totalPrice + item.price
+          }else{ //if its less just reduce it by an item price
+             state.totalPrice= state.totalPrice - (itemQuantity==0 ? 0: item.price) //if it give 1 just use 0 instead of item price otherwise it will go negative
+          }
+          return{...item  , quantity:Math.max(1,itemQuantity)} // quanity cannot be less than 1
         }
         return item
       })
+
     }
   },
 });
