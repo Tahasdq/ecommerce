@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/sonner";
 import "../globals.css"
 
 export default function AuthLayout({
@@ -10,6 +11,7 @@ export default function AuthLayout({
     >
       <main className="w-full">
         {children}
+         <Toaster richColors/>
       </main>
     </body>
   </html>)

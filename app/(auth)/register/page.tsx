@@ -3,11 +3,18 @@ import Wrapper from '@/components/app/Wrapper/Wrapper'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import React from 'react'
+import React, { useState } from 'react'
 import { Controller, SubmitHandler, useForm } from "react-hook-form"
 import * as zod from 'zod'
 import {zodResolver} from "@hookform/resolvers/zod"
-import { Eye , EyeClosed } from "lucide-react";
+import { Eye , EyeClosed, Router } from "lucide-react";
+import AuthService from '@/services/auth.service'
+import { toast } from 'sonner'
+import { Spinner } from "@/components/ui/spinner"
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+
+
 
  //registration schema
 const registrationSchema = zod.object({
@@ -39,6 +46,9 @@ type RegistrationInputs = {
 
 
 const page = () => {
+  const [loading,setLoading] = useState<Boolean>(false)
+  const authService = new AuthService(); 
+  const router = useRouter()
   const [showPasswordFields, setShowPasswordFields] = React.useState<{
   password: boolean;
   confirmPassword: boolean;
@@ -47,7 +57,7 @@ const page = () => {
   confirmPassword: false,
   });
 
-  const { control, handleSubmit, formState: { errors } } = useForm<RegistrationInputs>({
+  const { control, handleSubmit, formState: { errors } , resetField } = useForm<RegistrationInputs>({
     resolver: zodResolver(registrationSchema),
     defaultValues: {
       username: "",
@@ -58,8 +68,28 @@ const page = () => {
 
   }
   )
-  const onSubmit: SubmitHandler<RegistrationInputs> = () => {
-    console.log("form submitted")
+  
+  const onSubmit: SubmitHandler<RegistrationInputs> =  async (data) => {
+    setLoading(true)
+    console.log("form submitted" , data)
+    const payload = {
+      username:data.username,
+      password:data.password,
+      email:data.email
+    }
+    try{
+     const response =  await authService.registerUser(payload)
+     if(response?.success){
+      toast.success(response.message)
+      router.push('/login')
+     }
+    }catch(err:any){
+      setLoading(false)
+      resetField('email')
+      toast.error(err.message)
+    }finally{
+      setLoading(false)
+    }
   }
 
   const togglePassword =(name: keyof typeof showPasswordFields)=>{
@@ -131,9 +161,11 @@ const page = () => {
                {errors && errors.confirmPassword && <p className='text-red-500'>{errors.confirmPassword.message}</p>}
           </CardContent>
           <CardContent >
-            <Button className='w-full cursor-pointer' type='submit'>Register</Button>
+            <Button className='w-full cursor-pointer' type='submit'>{loading ? <Spinner/> :"Register"}</Button>
           </CardContent>
-
+          <CardContent >
+              <span><Link className="underline" href={"/Login"}>Signin now</Link></span>
+          </CardContent> 
         </form>
       </Card>
     </Wrapper>
