@@ -3,8 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import Header from "@/components/app/Header/Header";
 import Footer from "@/components/app/Footer/Footer";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/app/Sidebar/AppSidebar"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app/Sidebar/AppSidebar";
 import StoreProvider from "./StoreProvider";
 
 const geistSans = Geist({
@@ -31,19 +31,19 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background `}
-      > 
-      <StoreProvider>
-       <SidebarProvider>
-         <div className="md:hidden">
-         <AppSidebar />
-         </div>
-         <main className="w-full">
-          <Header />
-          {children}
-          <Footer />
-          </main>
+      >
+        <StoreProvider>
+          <SidebarProvider>
+            <div className="md:hidden">
+              <AppSidebar />
+            </div>
+            <main className="w-full">
+              <Header />
+              {children}
+              <Footer />
+            </main>
           </SidebarProvider>
-          </StoreProvider>
+        </StoreProvider>
       </body>
     </html>
   );

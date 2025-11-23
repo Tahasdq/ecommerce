@@ -1,15 +1,16 @@
 "use client"
 import React from "react";
 import { Button } from "../ui/button";
-import { Card, CardContent } from "../ui/card";
+import {  CardContent } from "../ui/card";
 import { CountingNumber } from "../ui/shadcn-io/counting-number";
-import Image from "next/image";
+import Wrapper from "../app/Wrapper/Wrapper";
+import hero from'@/assets/hero-homepage.png'
+import Container from "../app/Container/Container";
 
 export default function Hero() {
 
   return (
-    <div>
-      <Card>
+        <Wrapper className="flex flex-row justify-between">
         <CardContent className="flex flex-col  gap-10 md:flex-row md:items-center md:justify-center h-screen">
           <section className="flex flex-col gap-6  justify-center w-full md:w-3/5 ">
             <div className=" font-bold text-4xl md:text-6xl ">
@@ -66,10 +67,11 @@ export default function Hero() {
               </div>
             </div>
           </section>
-          <section className="right bg-[url(https://next-ecommerce-shopco.vercel.app/images/header-res-homepage.png)] bg-cover bg-center bg-no-repeat  w-full md:w-2/5 h-full ">
+          <section 
+          style={{ backgroundImage: `url(${hero.src})` }}
+          className={`right bg-cover bg-center bg-no-repeat  w-full md:w-2/5 h-full `}>
           </section>
         </CardContent>
-      </Card>
-    </div>
+        </Wrapper>
   );
 }

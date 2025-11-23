@@ -1,9 +1,8 @@
-import { Card, CardContent } from "../ui/card";
+import Wrapper from "../app/Wrapper/Wrapper";
 import {ProductListing} from "@/components/home/index"
 export default function NewArrival(){
     return(
-        <Card>
-            <div className="flex flex-col justify-center gap-10 h-full">
+            <Wrapper className="flex flex-col  gap-10  ">
                 <div className="flex justify-center">
                     <h2 className="font-bold text-3xl md:text-5xl">
                         NEW ARRIVALS
@@ -12,7 +11,6 @@ export default function NewArrival(){
                 <div>
                     <ProductListing/>
                 </div>
-            </div>
-        </Card>
+            </Wrapper>
     )
 }

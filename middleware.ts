@@ -1,10 +1,15 @@
 import { NextResponse,NextRequest } from 'next/server';
 
-export  function middleware(request: NextRequest,response:NextResponse) {
+export  function middleware(request: NextRequest) {
     console.log("middleware called")
     const pathname = request.nextUrl.pathname
-    console.log("pathname" , pathname)
-    console.log("request", request.cookies.get('authToken')?.value)
+   
+
+    if(request.nextUrl.pathname=="/logout") {
+      const response =  NextResponse.redirect(new URL ("/login" , request.url))
+        response.cookies.delete('authToken')
+      return response
+    }
     const isAuthenticated = request.cookies.get('authToken')?.value
 
     // if user is not authenticated and trying to access path other than login or resgiter then rediect them to login
@@ -16,6 +21,7 @@ export  function middleware(request: NextRequest,response:NextResponse) {
     if(isAuthenticated  && (pathname === '/login' || pathname === '/register')){
         return NextResponse.redirect(new URL('/', request.url))
     }
+    
 
     // if user not authenticated and trying to access login or resgiter then they can
   return NextResponse.next()

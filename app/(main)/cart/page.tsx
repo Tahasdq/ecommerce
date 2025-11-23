@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { Counter } from "@/components/ui/shadcn-io/counter";
 import { deleteItemsFromCart, item, updateCart } from "@/lib/redux/features/cartSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks/hooks";
+import axios from "axios";
 import {  MoveRight, Trash } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -27,6 +28,14 @@ export default function Cart() {
   const deleteItems = (arg:item)=>{
     console.log("arg" , arg)
     dispatch(deleteItemsFromCart(arg))
+  }
+  const handleCheckout  =  async() =>{
+    try {
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_LOCAL}/api/payment` ,  { withCredentials: true })
+      window.location.href = res.data.url;
+    } catch(error){
+       alert("Checkout failed")
+    }
   }
  
 
@@ -95,7 +104,7 @@ export default function Cart() {
                 <div>Total</div>
                 <div>{totalPrice}</div>
               </div>
-              <Button className="cursor-pointer  sm:px-40 sm:py-5 md:px-20 md:py-6  lg:px-40  rounded-3xl  flex justify-center items-center gap-2">
+              <Button onClick={handleCheckout } className="cursor-pointer  sm:px-40 sm:py-5 md:px-20 md:py-6  lg:px-40  rounded-3xl  flex justify-center items-center gap-2">
                 <div className="text-xl">Add to cart</div>
                   <MoveRight size={50} className="!w-20 h-10!"  />
               </Button>

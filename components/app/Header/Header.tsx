@@ -3,7 +3,7 @@ import React from "react";
 import logo from "@/assets/logo.svg";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
-import { CircleUserRound, Menu, ShoppingCart } from "lucide-react";
+import { CircleUserRound, LogOut, Menu, ShoppingCart } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -18,7 +18,7 @@ import { items } from "@/lib/constants";
 import SearchBar from "../SearchBar/SearchBar";
 import Wrapper from "../Wrapper/Wrapper";
 import { Badge } from "@/components/ui/badge";
-import { useAppSelector } from "@/lib/redux/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks/hooks";
 import { useRouter } from "next/navigation";
 
 
@@ -29,12 +29,21 @@ const Header = () => {
  
   const cartItems = useAppSelector((state)=>state.cartReducer.cartItems)
   const cartItemsLength  = cartItems.length
+
+  
+ 
+  const logout = ()=>{
+    sessionStorage.removeItem('persist:root')
+    router.push("/logout")
+  }
   return (
-    <Card className="  rounded-none">
-      <Wrapper className="flex flex-row justify-between">
-        <CardContent className="flex flex-row items-center gap-2   ">
+    <div className="sticky top-0 z-10 bg-white/70 backdrop-blur-sm transition-colors duration-300">
+      <Wrapper className={`flex flex-row justify-between  z-10 mt-0 py-5 h-auto`}>
+        <CardContent className="flex flex-row items-center gap-2">
           <Menu className="md:hidden cursor-pointer" onClick={toggleSidebar} />
-          <Image width={70} height={60} alt="logo" src={logo} />
+          <Link href={"/"}>
+          <Image  width={70} height={60} alt="logo" src={logo} />
+          </Link> 
           <Navbar className="hidden  md:block" />
         </CardContent>
         <CardContent className="flex flex-row gap-7 relative  items-center">
@@ -45,11 +54,11 @@ const Header = () => {
            </Badge>
             <ShoppingCart  size={24} className=" cursor-pointer" />
           </div>
-          <CircleUserRound   size={30} className="inline-block cursor-pointer" /> {/* need to understadn this shit no matter what??? */}
+          <LogOut onClick={logout}   size={30} className="inline-block cursor-pointer" /> {/* need to understadn this shit no matter what??? */}
           
         </CardContent>
       </Wrapper>
-    </Card>
+      </div>
   );
 };
 
