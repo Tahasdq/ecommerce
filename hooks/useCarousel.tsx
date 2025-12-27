@@ -9,7 +9,7 @@ import {
 import { Star } from "lucide-react";
 import React from "react";
 
-const useCarousel = ({ data }) => {
+const useCarousel = ({ data }:any) => {
   return (
     <div className=" w-full px-15 sm:px-0">
       <Carousel
@@ -19,7 +19,7 @@ const useCarousel = ({ data }) => {
         className="w-full relative "
       >
         <CarouselContent>
-          {data?.map((item, index) => (
+          {data?.map((item:any, index:any) => (
             <CarouselItem
               key={index}
               className=" sm:basis-1/2 md:basis-1/3 lg:basis-1/4 "

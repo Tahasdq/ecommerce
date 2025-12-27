@@ -11,7 +11,7 @@ import React from "react";
 
 const ReviewsCarousel = ({ data } : {data : {id:Number , name:string , reviewStars:number , notes:string}[] }) => {
   return (
-    <div className=" w-full px-15 sm:px-0">
+    <div className=" w-full px-15 sm:px-10 xl:px-0">
       <Carousel
         opts={{
           align:"center",
@@ -23,10 +23,10 @@ const ReviewsCarousel = ({ data } : {data : {id:Number , name:string , reviewSta
           {data?.map((item, index) => (
             <CarouselItem
               key={index}
-              className=" sm:basis-1/2 md:basis-1/3 lg:basis-1/4 "
+              className=" max-w-80 sm:basis-1/2 md:basis-1/3 lg:basis-1/4 "
             >
-              <div className="p-1">
-                <Card>
+              <div className="p-1 max-w-80">
+                <Card >
                   <CardContent className="flex flex-col aspect-square items-start justify-center p-6 gap-5">
                     <div className="text-3xl font-semibold">{item.name}</div>
                     <div className="text-3xl font-semibold flex gap-1">

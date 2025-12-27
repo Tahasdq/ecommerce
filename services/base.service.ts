@@ -7,11 +7,11 @@ export class BaseService {
     this.baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASE_LOCAL + "/api";
   }
 
-  async get(url, params) {
+  async get(url:any, params:any) {
     const response = await axios.get(`${this.baseUrl}/${url}`, { params });
     return response;
   }
-  async post(url, payload) {
+  async post(url:any, payload:any) {
     try {
       const response = await axios.post(`${this.baseUrl}/${url}`, payload ,  { withCredentials: true });
       return response.data;
