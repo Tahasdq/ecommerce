@@ -11,6 +11,8 @@ export  function middleware(request: NextRequest) {
       return response
     }
     const isAuthenticated = request.cookies.get('authToken')?.value
+    console.log("isAuthenticated" , isAuthenticated)
+    console.log("cookies" , request.cookies.get('authToken'))
 
     // if user is not authenticated and trying to access path other than login or resgiter then rediect them to login
     if(!isAuthenticated && !(pathname === '/login' || pathname === '/register')){

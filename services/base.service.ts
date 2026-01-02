@@ -4,7 +4,7 @@ export class BaseService {
   protected baseUrl: string; // we need to define type in here otherwise ts error
 
   constructor() {
-    this.baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASE_LOCAL + "/api";
+    this.baseUrl =  "/api";
   }
 
   async get(url:any, params:any) {
