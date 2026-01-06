@@ -3,7 +3,8 @@ import axios from "axios";
 
 const BACKEND_BASE =
 //   "http://localhost:8000"; // change to Azure backend later
-"https://ecommercebackend-e8dbfjc6erbcdgha.centralindia-01.azurewebsites.net"
+// "https://ecommercebackend-e8dbfjc6erbcdgha.centralindia-01.azurewebsites.net"
+process.env.NEXT_PUBLIC_BACKEND_BASE_LOCAL
 
 export async function GET(req: Request, { params }: any) {
   return proxy(req, params.path, "GET");
