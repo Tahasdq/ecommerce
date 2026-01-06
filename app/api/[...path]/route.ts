@@ -7,12 +7,14 @@ const BACKEND_BASE =
 //   "http://localhost:8000"; // change to Azure backend later
 // "https://ecommercebackend-e8dbfjc6erbcdgha.centralindia-01.azurewebsites.net"
 process.env.NEXT_PUBLIC_BACKEND_BASE_LOCAL
-
+console.log("BACKEND_BASE" , BACKEND_BASE)
 export async function GET(req: Request, { params }: any) {
+  console.log("BACKEND_BASE" , BACKEND_BASE)
   return proxy(req, params.path, "GET");
 }
 
 export async function POST(req: Request, { params }: any) {
+  console.log("BACKEND_BASE" , BACKEND_BASE)
   return proxy(req, params.path, "POST");
 }  
 
