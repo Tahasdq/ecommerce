@@ -12,7 +12,7 @@ export async function GET(req: Request, { params }: any) {
 
 export async function POST(req: Request, { params }: any) {
   return proxy(req, params.path, "POST");
-}
+}  
 
 export async function PUT(req: Request, { params }: any) {
   return proxy(req, params.path, "PUT");
@@ -23,6 +23,7 @@ export async function DELETE(req: Request, { params }: any) {
 }
 
 async function proxy(req: Request, path: string[], method: string) {
+  console.log("BACKEND_BASE" , BACKEND_BASE)
   const url = `${BACKEND_BASE}/api/${path.join("/")}`;
 
   const headers: any = {
