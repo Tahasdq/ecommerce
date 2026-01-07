@@ -31,7 +31,7 @@ async function proxy(req: Request, path: string[], method: string) {
   const url = `${BACKEND_BASE}/api/${path.join("/")}`;
 
   const headers: any = {
-    "content-type": "application/json", 
+    "content-type": "application/json",  
   };
 
   const body =
