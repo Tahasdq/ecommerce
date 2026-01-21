@@ -31,5 +31,5 @@ export  function middleware(request: NextRequest) {
 
 // ✅ This matcher skips internal/static routes automatically
 export const config = {
-  matcher: ['/((?!_next|favicon.ico|api).*)'],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\..*).*)'],
 }
