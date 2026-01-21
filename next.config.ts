@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
   images: {
     domains: ['next-ecommerce-shopco.vercel.app'],
   },
+  experimental: {
+    serverActions: false,
+  },
 };
 
 export default nextConfig;
