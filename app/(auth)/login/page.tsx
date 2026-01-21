@@ -33,9 +33,9 @@ type LoginInputs = {
 }
 
 
-const page = () => {
+const async  page = () => {
   const authService = new AuthService()
-   const router = useRouter()
+   const  router = useRouter()
   const [showPasswordFields, setShowPasswordFields] = useState<{
   password: boolean;
   confirmPassword: boolean;
