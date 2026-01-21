@@ -1,35 +1,32 @@
-import { NextResponse,NextRequest } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 
-export  function middleware(request: NextRequest) {
-    console.log("middleware called")
-    const pathname = request.nextUrl.pathname
-   
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const token = request.cookies.get('authToken')?.value;
 
-    if(request.nextUrl.pathname=="/logout") {
-      const response =  NextResponse.redirect(new URL ("/login" , request.url))
-        response.cookies.delete('authToken')
-      return response
+  // Allow public routes immediately
+  if (pathname === '/login' || pathname === '/register') {
+    if (token) {
+      return NextResponse.redirect(new URL('/', request.url));
     }
-    const isAuthenticated = request.cookies.get('authToken')?.value
-    console.log("isAuthenticated" , isAuthenticated)
-    console.log("cookies" , request.cookies.get('authToken'))
+    return NextResponse.next();
+  }
 
-    // if user is not authenticated and trying to access path other than login or resgiter then rediect them to login
-    if(!isAuthenticated && !(pathname === '/login' || pathname === '/register')){
-        return NextResponse.redirect(new URL('/login', request.url))
-    }
+  // Handle logout
+  if (pathname === '/logout') {
+    const response = NextResponse.redirect(new URL('/login', request.url));
+    response.cookies.delete('authToken');
+    return response;
+  }
 
-    // if user  not authenticated and trying to access login or resgiter then rediect them to home
-    if(isAuthenticated  && (pathname === '/login' || pathname === '/register')){
-        return NextResponse.redirect(new URL('/', request.url))
-    }
-    
+  // Protect all other routes
+  if (!token) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
 
-    // if user not authenticated and trying to access login or resgiter then they can
-  return NextResponse.next()
+  return NextResponse.next();
 }
 
-// ✅ This matcher skips internal/static routes automatically
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\..*).*)'],
-}
+  matcher: ['/((?!_next|favicon.ico|api).*)'],
+};
