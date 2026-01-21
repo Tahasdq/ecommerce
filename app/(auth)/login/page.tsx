@@ -33,7 +33,7 @@ type LoginInputs = {
 }
 
 
-const async  page = () => {
+const  page = async () => {
   const authService = new AuthService()
    const  router = useRouter()
   const [showPasswordFields, setShowPasswordFields] = useState<{
