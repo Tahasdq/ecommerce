@@ -36,6 +36,20 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
+  --success: 142 71% 45%;
+  --success-foreground: 0 0% 100%;
+  
+  --warning: 38 92% 50%;
+  --warning-foreground: 0 0% 100%;
+  
+  --info: 217 91% 60%;
+  --info-foreground: 0 0% 100%;
+  
+  --admin-sidebar: 222 47% 11%;
+  --admin-sidebar-foreground: 210 40% 98%;
+  --admin-sidebar-muted: 220 9% 46%;
+  --admin-sidebar-accent: 217 91% 60%;
+  --admin-sidebar-hover: 222 47% 16%;
 }
 
 .dark {
@@ -127,3 +141,57 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+/**
+ * NEXT.JS ADMIN DASHBOARD - CSS ADDITIONS
+ * 
+ * Add these styles to your existing globals.css file in your Next.js project.
+ * Merge the :root variables with your existing ones.
+ */
+
+
+
+
+
+/* ============================================
+   ADD TO YOUR @layer components SECTION
+   ============================================ */
+
+
+@layer components {
+  .admin-gradient {
+    background: linear-gradient(135deg, hsl(222 47% 11%) 0%, hsl(222 47% 18%) 100%);
+  }
+
+  .stat-card {
+    @apply bg-card rounded-lg border border-border p-6 transition-shadow duration-200 hover:shadow-md;
+  }
+
+  .status-badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  .status-completed {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .status-pending {
+    @apply bg-amber-100 text-amber-800;
+  }
+
+  .status-cancelled {
+    @apply bg-red-100 text-red-800;
+  }
+
+  .status-processing {
+    @apply bg-blue-100 text-blue-800;
+  }
+}
+
+
+/* ============================================
+   ADD TO YOUR tailwind.config.ts colors
+   ============================================ */
+
+
