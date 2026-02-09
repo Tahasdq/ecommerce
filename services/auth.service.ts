@@ -1,7 +1,8 @@
 import { BaseService } from "./base.service";
 
-const REGISTER_USER = "user/register"
-const LOGIN_USER = "user/login"
+const REGISTER_USER = "auth/register"
+const LOGIN_USER = "auth/login"
+const IS_ME = "auth/me"
 
 class AuthService extends BaseService{
     async registerUser(payload:any) {
@@ -9,6 +10,9 @@ class AuthService extends BaseService{
     }
     async loginUser(payload:any){
         return this.post(LOGIN_USER ,payload)
+    }
+    async isMe(){
+        return this.get(IS_ME)
     }
 }
 

@@ -26,14 +26,14 @@ export const items : itemTypes[] = [
 
 export const sizes : SelectedSize[] = [
     {id:1,
-      sizeName:"small"
+      sizeName:"S"
     },
     { id:2,
-      sizeName:"medium"
+      sizeName:"M"
     },
     {
       id:3,
-      sizeName:"large"
+      sizeName:"L"
     }
   ]
 export const colors: SelectedColor[]= [

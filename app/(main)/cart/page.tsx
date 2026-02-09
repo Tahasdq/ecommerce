@@ -6,36 +6,50 @@ import { Separator } from "@/components/ui/separator";
 import { Counter } from "@/components/ui/shadcn-io/counter";
 import { deleteItemsFromCart, item, updateCart } from "@/lib/redux/features/cartSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks/hooks";
+import ProductService from "@/services/product.service";
 import axios from "axios";
 import {  MoveRight, Trash } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-
+import { useRouter } from "next/navigation";
+import AuthService from "@/services/auth.service";
+import { EmptyCart } from "@/components/app/Header/EmptyCart/EmptyCart";
 
 
 export default function Cart() {
-  const data = useAppSelector((state)=>state.cartReducer)
+  const data = useAppSelector((state)=>state.cart)
   const dispatch = useAppDispatch()
+  const router = useRouter()
 
   const {cartItems ,totalPrice } = data
+  console.log("cartItems",cartItems)
 
-  const handleQuantity = (id:string,newValue: number,variantId:string) => {
-    // setQuantity((quantity)=>quantity.map((item)=>(
-    //   item.id==id? {...item , quantity : Math.max(1 , newValue) }: item
-    // )))
-    dispatch(updateCart({id,quantity:newValue,variantId}))
+  const handleQuantity = async (id:string,newValue: number,variantId:string) => {
+     const fetchProduct = async () => {
+    const product = new ProductService();
+    const productData = await product.getProductById(id);
+    return productData
+    };
+     const productData = await fetchProduct()
+     const stock = productData.variants.find((item)=>item._id==variantId).stock
+     console.log("stock",stock)
+     if(!stock){
+      return
+     }
+  
+    dispatch(updateCart({id,quantity:newValue,variantId,stock}))
   }
   const deleteItems = (arg:item)=>{
-    console.log("arg" , arg)
     dispatch(deleteItemsFromCart(arg))
   }
   const handleCheckout  =  async() =>{
-    try {
-    const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_LOCAL}/api/payment` ,  { withCredentials: true })
-      window.location.href = res.data.url;
-    } catch(error){
-       alert("Checkout failed")
-    }
+    router.push("/checkout-page")
+    // try {
+    // const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_LOCAL}/api/payment` ,  { withCredentials: true })
+    //   window.location.href = res.data.url;
+    // } catch(error){
+    //    alert("Checkout failed")
+    // }
   }
  
 
@@ -105,14 +119,14 @@ export default function Cart() {
                 <div>{totalPrice}</div>
               </div>
               <Button onClick={handleCheckout } className="cursor-pointer  sm:px-40 sm:py-5 md:px-20 md:py-6  lg:px-40  rounded-3xl  flex justify-center items-center gap-2">
-                <div className="text-xl">Add to cart</div>
+                <div className="text-xl">Proceed To Checkout</div>
                   <MoveRight size={50} className="!w-20 h-10!"  />
               </Button>
             </div>
           </CardContent>
         </div>
         </> : 
-        <p>not items found</p>
+       <EmptyCart/>
         }
       </Wrapper>
     </Card>

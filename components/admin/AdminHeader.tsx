@@ -1,3 +1,4 @@
+"use client"
 import { Bell, Search, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface AdminHeaderProps {
@@ -16,7 +18,13 @@ interface AdminHeaderProps {
   subtitle?: string;
 }
 
+
 export function AdminHeader({ title, subtitle }: AdminHeaderProps) {
+ const router =  useRouter()
+ const logout = ()=>{
+  sessionStorage.removeItem('persist:root')
+  router.push("/logout")
+}
   return (
     <header className="flex items-center justify-between h-16 px-6 bg-card border-b border-border">
       <div>
@@ -68,7 +76,7 @@ export function AdminHeader({ title, subtitle }: AdminHeaderProps) {
             </DropdownMenuItem>
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">
+            <DropdownMenuItem className="text-destructive" onClick={logout}>
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

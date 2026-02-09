@@ -2,6 +2,7 @@ export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 import axios from "axios";
+import { auth } from "../auth/[...nextauth]/route";
 
 const BACKEND_BASE =
 //   "http://localhost:8000"; // change to Azure backend later
@@ -28,11 +29,24 @@ export async function DELETE(req: Request, { params }: any) {
 
 async function proxy(req: Request, path: string[], method: string) {
   console.log("BACKEND_BASE" , BACKEND_BASE)
-  const url = `${BACKEND_BASE}/api/${path.join("/")}`;
+  console.log("path",path)
+  console.log("req",req)
+  const { search } = new URL(req.url);
+ const url = `${BACKEND_BASE}/api/${path.join("/")}${search}`;
+
+  console.log("url",url)
+
+  const cookie = req.headers.get("cookie");
+  const session = await auth();
+  
+  console.log("session", session);
+
 
   const headers: any = {
     "content-type": "application/json",  
+    ...(cookie ? { cookie } : {}), // forward cookies
   };
+  
 
   const body =
     method === "GET" || method === "DELETE"

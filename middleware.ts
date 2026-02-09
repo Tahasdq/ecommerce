@@ -1,28 +1,52 @@
 import { NextResponse, NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
+export async  function middleware (request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const token = request.cookies.get('authToken')?.value;
+  const adminToken = request.cookies.get('adminToken')?.value;
+  const customerToken  = request.cookies.get('customerToken')?.value;
 
-  // Allow public routes immediately
   if (pathname === '/login' || pathname === '/register') {
-    if (token) {
-      return NextResponse.redirect(new URL('/', request.url));
+    if (adminToken) {
+      return NextResponse.redirect(new URL('/admin', request.url));
     }
     return NextResponse.next();
   }
 
-  // Handle logout
+  // Handle logout for both
   if (pathname === '/logout') {
-    const response = NextResponse.redirect(new URL('/login', request.url));
-    response.cookies.delete('authToken');
+    if(adminToken){
+      const response = NextResponse.redirect(new URL('/login', request.url));
+      response.cookies.delete('adminToken');
+      return response;
+    }
+    const response = NextResponse.redirect(new URL('/', request.url));
+
+    response.cookies.delete('customerToken'); 
     return response;
   }
+  
+  //pathname vs pathname.startsWith
+  if (adminToken && pathname=="/") {
+    return NextResponse.redirect(new URL("/admin", request.url));
+  }
+  if (adminToken && pathname === "/login" || pathname === "/register") {
+    return NextResponse.redirect(new URL("/admin", request.url));
+  }
 
-  // Protect all other routes
-  if (!token) {
+  if (!adminToken && pathname.startsWith('/admin')) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
+
+
+  //customer specific
+  if(customerToken && pathname.startsWith("admin")){
+      return NextResponse.redirect(new URL('/', request.url));
+  }
+  if (customerToken && pathname === "/login" || pathname === "/register") {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+
 
   return NextResponse.next();
 }

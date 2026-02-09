@@ -5,11 +5,11 @@ const nextConfig: NextConfig = {
   output:"standalone",
   distDir: "build",
   images: {
-    domains: ['next-ecommerce-shopco.vercel.app'],
+    domains: ['next-ecommerce-shopco.vercel.app' , 'images.unsplash.com'],
   },
-  experimental: {
-    serverActions: false,
-  },
+  // experimental: {
+  //   serverActions: false,
+  // },
 };
 
 export default nextConfig;

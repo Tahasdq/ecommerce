@@ -6,6 +6,9 @@ import Footer from "@/components/app/Footer/Footer";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app/Sidebar/AppSidebar";
 import StoreProvider from "./StoreProvider";
+import { Toaster } from "@/components/ui/sonner";
+import  {Session}  from "./SessionProvider";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +34,8 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background `}
-      >
+        >
+        <Session>
         <StoreProvider>
           <SidebarProvider>
             <div className="md:hidden">
@@ -40,10 +44,12 @@ export default function RootLayout({
             <main className="w-full">
               <Header />
               {children}
+              <Toaster richColors/>
               <Footer />
             </main>
           </SidebarProvider>
         </StoreProvider>
+        </Session>
       </body>
     </html>
   );

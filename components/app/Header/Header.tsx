@@ -1,9 +1,9 @@
 "use client"
-import React from "react";
+import React, { useEffect, useState } from "react";
 import logo from "@/assets/logo.svg";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
-import { CircleUserRound, LogOut, Menu, ShoppingCart } from "lucide-react";
+import { CircleUserRound, LogOut, Menu, ShoppingCart, User } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -19,22 +19,40 @@ import SearchBar from "../SearchBar/SearchBar";
 import Wrapper from "../Wrapper/Wrapper";
 import { Badge } from "@/components/ui/badge";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks/hooks";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import AuthService from "@/services/auth.service";
+import AuthModal from "../AuthModal/AuthModal";
+import { setModal } from "@/lib/redux/features/modalSlice";
+import { toast } from "sonner";
+import useAuth from "@/hooks/useAuth";
 
 
 
 const Header = () => {
   const {toggleSidebar} = useSidebar()
+   const { user, checkAuth } = useAuth();
+   const pathname = usePathname()
+   console.log("user",user)
+
+  useEffect(() => {
+    checkAuth();
+  }, [pathname]);
+
   const router = useRouter()
  
-  const cartItems = useAppSelector((state)=>state.cartReducer.cartItems)
+  const cartItems = useAppSelector((state)=>state.cart.cartItems)
   const cartItemsLength  = cartItems.length
+
 
   
  
   const logout = ()=>{
-    sessionStorage.removeItem('persist:root')
+    // sessionStorage.removeItem('persist:root')
     router.push("/logout")
+  }
+
+  const redirectToCart =  async ()=>{
+      router.push("/cart")
   }
   return (
     <div className="sticky top-0 z-10 bg-white/70 backdrop-blur-sm transition-colors duration-300">
@@ -48,16 +66,26 @@ const Header = () => {
         </CardContent>
         <CardContent className="flex flex-row gap-7 relative  items-center">
           <SearchBar />
-          <div onClick={()=> router.push("/cart")} className="relative ">
+          <div onClick={redirectToCart} className="relative  cursor-pointer! flex gap-3">   {/* why ()=> not working   */}
            <Badge className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums absolute left-4 -top-3">
             {cartItemsLength}
            </Badge>
             <ShoppingCart  size={24} className=" cursor-pointer" />
-          </div>
-          <LogOut onClick={logout}   size={30} className="inline-block cursor-pointer" /> {/* need to understadn this shit no matter what??? */}
-          
+         
+        </div>
+        {
+          user && 
+          <>
+          <LogOut onClick={logout}   size={35} className="inline-block cursor-pointer" /> 
+          <User onClick={()=>router.push("/user-details")} size={35}  className="cursor-pointer"/> 
+          </>
+        }
         </CardContent>
+
       </Wrapper>
+        {/* <AuthModal
+        type="Login"
+        /> */}
       </div>
   );
 };
