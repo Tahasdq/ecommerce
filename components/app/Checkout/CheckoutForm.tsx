@@ -38,12 +38,12 @@ interface FormValues { //refctor them to there app place
     name:string,
     value:string
   }
-const emptyCityState = {id:0 , name: "", value:""}
+// const emptyCityState = {id:0 , name: "", value:""}
 const States = [
-  {text:"Sindh" , value:"sh"},
-  {text:"Punjab" , value:"pb"},
-  {text:"KPK" , value:"kp"},
-  {text:"Balochistan" , value:"bn"}
+  {id:1 , text:"Sindh" , value:"sh"},
+  {id:2 , text:"Punjab" , value:"pb"},
+  {id:3 , text:"KPK" , value:"kp"},
+  {id:4 , text:"Balochistan" , value:"bn"}
 ]
 const citiesByStates :Record<string,cities[]>={
     "sh":[{id:1 , name:"Hyderabad" , value:"hy"},{id:2 , name:"Karachi" , value:"kc"} ],
@@ -53,7 +53,7 @@ const citiesByStates :Record<string,cities[]>={
 
 }
 export default function CheckoutForm({ onSubmit , form }: { onSubmit : (data :CheckoutFormValues)=>void , form: UseFormReturn<FormValues> }) {
-  const [cities ,setCities] = useState<cities[] |null>([emptyCityState])
+  const [cities ,setCities] = useState<cities[] |null>([])
  
  const changeState  = (field:ControllerRenderProps<FormValues ,"state">,value :string)=>{
   field.onChange(value)
@@ -151,7 +151,7 @@ export default function CheckoutForm({ onSubmit , form }: { onSubmit : (data :Ch
                       <SelectContent>
                         {
                         States && States.map((state)=>(
-                          <SelectItem value={state.value}>{state.text}</SelectItem>
+                          <SelectItem key={state.id} value={state.value}>{state.text}</SelectItem>
                         ))
                         }
                       </SelectContent>
@@ -175,7 +175,7 @@ export default function CheckoutForm({ onSubmit , form }: { onSubmit : (data :Ch
                       <SelectContent>
                         {
                         cities && cities?.map((city)=>(
-                          <SelectItem value={city.value}>{city.name}</SelectItem>
+                          <SelectItem key={city.id} value={city.value}>{city.name}</SelectItem>
                         ))
                         }
                       </SelectContent>
