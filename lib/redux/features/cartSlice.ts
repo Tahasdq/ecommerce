@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { checkDomainOfScale } from "recharts/types/util/ChartUtils";
 
 export interface item {
     variantId:string
@@ -7,7 +8,8 @@ export interface item {
     color:string;
     size:string;
     price:number;
-    quantity:number
+    quantity:number,
+    stock?:number
 
 }
 interface stateData {
@@ -28,16 +30,25 @@ const cartSlice = createSlice({
       const totalPrice = quantity * (price)
       const itemExists = state.cartItems.some((item) => item.variantId == variantId );
       const maxStock = stock
+      if(!maxStock){console.log("stock not found")
+        return
+      }
       const cartProductQuantity = state.cartItems.find((item)=>item.variantId == variantId)?.quantity
+      if(!cartProductQuantity) {
+        console.log("cartProductQuantity not found")
+        return
+      }
       if(cartProductQuantity+quantity>maxStock){
-         return alert(`Only ${maxStock} item${maxStock > 1 ? "s" : ""} available in stock`);
+          alert(`You already have ${cartProductQuantity} items in the cart. Only ${maxStock} are available in total`);
+          return
       }
       if(quantity>maxStock){
-        return alert(`Only ${maxStock} item${maxStock > 1 ? "s" : ""} available in stock`);
+         alert(`You already have ${cartProductQuantity} items in the cart. Only ${maxStock} are available in total`);
+         return
       }
       if(itemExists){
       state.cartItems = state.cartItems.map((item) =>
-        item.id == id ? {...item, quantity :item.quantity + quantity} :  item
+        item.id == id && item.variantId==variantId ? {...item, quantity :item.quantity + quantity} :  item
       );}
       else{
         state.cartItems = [...state.cartItems , action.payload]
@@ -55,14 +66,19 @@ const cartSlice = createSlice({
       state.totalPrice= state.totalPrice - (itemFound?.price *itemFound?.quantity)
       }
     },
-    updateCart : (state,action:PayloadAction<{id:string , quantity:number , variantId:string,stock}>)=>{
+    updateCart : (state,action:PayloadAction<{id:string , quantity:number , variantId:string,stock:number}>)=>{
       const{id , variantId,quantity,stock} = action.payload
       const itemId = id
       const itemQuantity = quantity //new value for quanitity
+      if(!stock){return}
 
       const maxStock = stock
-      // const cartProductQuantity = state.cartItems.find((item)=>item.variantId == variantId)?.quantity
-      if(itemQuantity>maxStock){
+      const cartProductQuantity = state.cartItems.find((item)=>item.variantId == variantId)?.quantity
+      if(!cartProductQuantity) {
+        console.log("cartProductQuantity not found")
+        return
+      }
+      if(cartProductQuantity+ itemQuantity>maxStock){
          return alert(`Only ${maxStock} item${maxStock > 1 ? "s" : ""} available in stock`);
       }
       if(quantity>maxStock){

@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AuthService from "@/services/auth.service";
 import { EmptyCart } from "@/components/app/Header/EmptyCart/EmptyCart";
+import { ProductFetched } from "@/types/product.type";
 
 
 export default function Cart() {
@@ -28,15 +29,17 @@ export default function Cart() {
      const fetchProduct = async () => {
     const product = new ProductService();
     const productData = await product.getProductById(id);
-    return productData
+    return  productData.data
     };
-     const productData = await fetchProduct()
-     const stock = productData.variants.find((item)=>item._id==variantId).stock
-     console.log("stock",stock)
+    const productData:ProductFetched = await fetchProduct()
+      if (!productData) {
+    console.error("Product not found!");
+    return; // Stop here
+  }
+    const stock = productData.variants.find((item)=>item._id==variantId)?.stock
      if(!stock){
       return
      }
-  
     dispatch(updateCart({id,quantity:newValue,variantId,stock}))
   }
   const deleteItems = (arg:item)=>{
@@ -65,6 +68,7 @@ export default function Cart() {
           <CardContent className="w-full md:w-2.5/5">
             {
              cartItems && cartItems?.map((item)=>{
+              // buildCloudinaryUrl(item.)
                   return(
             <Card className="py-3">
               <CardContent className="flex gap-3">

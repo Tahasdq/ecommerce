@@ -2,7 +2,7 @@
 import { cn } from "@/lib/utils";
 import React, { useState } from "react";
 
-const SizeButton = ({name , selectedSizes,sizeKey}:{name:string}) => {
+const SizeButton = ({name , selectedSizes,sizeKey}:{name:string,sizeKey:number,selectedSizes:any[]}) => {
   const selectedSize = selectedSizes?.find((sc)=>sc.key==sizeKey )? "bg-black text-white":""
 
   return (

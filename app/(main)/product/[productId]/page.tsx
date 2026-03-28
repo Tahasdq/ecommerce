@@ -4,22 +4,23 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Counter } from "@/components/ui/shadcn-io/counter";
 import { colors, sizes } from "@/lib/constants";
-import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks/hooks";
-import { id, SelectedColor, SelectedSize } from "@/types/types";
+import { useAppDispatch } from "@/lib/redux/hooks/hooks";
 import { Check } from "lucide-react";
 import Image from "next/image";
-import { notFound, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { addToCart } from "@/lib/redux/features/cartSlice";
 import ProductService from "@/services/product.service";
+import { buildCloudinaryUrl } from "@/lib/helpers";
+import { EMPTY_PRODUCT } from "@/types/product.type";
 // import { products } from "@/components/home/ProductListing";
 
 // const PRODUCT_PRICE = "1200";
 
 export default function Product() {
-  const [product, setProduct] = useState({});
-  const [selectedColor, setSelectedColor] = useState(null);
-  const [selectedSize, setSelectedSize] = useState(null);
+  const [product, setProduct] = useState(EMPTY_PRODUCT);
+  const [selectedColor, setSelectedColor] = useState<string | null>("");
+  const [selectedSize, setSelectedSize] = useState<string | null>("");
   const [qauntity, setQuantity] = React.useState(1);
 
 
@@ -37,7 +38,7 @@ export default function Product() {
   const fetchProduct = async () => {
     const product = new ProductService();
     const productData = await product.getProductById(productId);
-    setProduct(productData);
+    setProduct(productData.data);
     console.log("productData", productData);
   };
 
@@ -72,6 +73,9 @@ export default function Product() {
       return 
     }
     const maxProductUSerCanAdd = selectedVariant?.stock
+    if(!maxProductUSerCanAdd){
+      return 
+    }
     setQuantity(Math.max(1, Math.min(maxProductUSerCanAdd, newValue)));
   };
 
@@ -97,7 +101,8 @@ export default function Product() {
       selectedSize &&
       selectedColor &&
       qauntity &&
-      product.price
+      product.price &&
+      selectedVariant?._id
     ) {
       const payload = {
         id: String(productId),
@@ -113,8 +118,6 @@ export default function Product() {
     }
   };
 
-
-
   const handleSize = (size: string) => {
     setSelectedSize((prev) => (prev === size ? null : size));
   };
@@ -122,6 +125,7 @@ export default function Product() {
   const handleColor = (color: string) => {
     setSelectedColor((prev) => (prev === color ? null : color));
   };
+  const ImageUrl =  buildCloudinaryUrl(product?.imagePublicId)
 
   return (
     <Card>
@@ -129,7 +133,7 @@ export default function Product() {
         <CardContent className="w-full md:w-3/5">
           <div className="product-image relative rounded-3xl overflow-hidden cursor-pointer min-w-56 min-h-96 py-0">
             <Image
-              src="https://next-ecommerce-shopco.vercel.app/images/header-res-homepage.png"
+              src={ImageUrl}
               alt="sample"
               fill
               objectFit="cover"
@@ -139,10 +143,10 @@ export default function Product() {
         </CardContent>
         <CardContent className="w-full md:w-4/5 flex gap-4 flex-col  mt-10 md:mt-0">
           <div className="flex justify-center md:justify-start ">
-            <h2 className="font-bold text-3xl md:text-5xl">{product.name}</h2>
+            <h2 className="font-bold text-3xl md:text-5xl">{product?.name}</h2>
           </div>
           <div>
-            {Array.from({ length: product.star }).map((star) => (
+            {Array.from({ length: Number(product.star) }).map((star) => (
               <p>*</p>
             ))}
           </div>
@@ -161,10 +165,10 @@ export default function Product() {
                       onClick={() => !disabled && handleColor(color)}
                       style={{ backgroundColor: color }}
                       className={`h-10 w-10 rounded-full border-2 flex items-center justify-center cursor-pointer
-          ${selectedColor === color ? "border-black" : "border-gray-300"}
-          ${disabled ? "opacity-30 cursor-not-allowed" : ""}
-        `}
-                    >
+                      ${selectedColor === color ? "border-black" : "border-gray-300"}
+                      ${disabled ? "opacity-30 cursor-not-allowed" : ""}
+                    `}
+                  >
                       {selectedColor === color && (
                         <Check size={22} color="white" />
                       )}

@@ -1,12 +1,20 @@
 "use client"
 import AuthModal from "@/components/app/AuthModal/AuthModal";
-import { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import AuthService from "@/services/auth.service";
 import Spinner from "@/components/Spinner/Spinner";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/lib/redux/features/userSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks/hooks";
 
-export default function ProtectedLayout({ children }) {
+
+export default function ProtectedLayout({ children }:{children:React.ReactNode}) {
+    const dispatch = useAppDispatch()
+    const user = useAppSelector((value)=>value.user)
+    
+    
     const pathname = usePathname()
     const router = useRouter()
     const [isLoggedIn,setisLogin]=useState(false)
@@ -19,6 +27,9 @@ export default function ProtectedLayout({ children }) {
             if(result) {
                 setisLogin(true)
                 router.push(pathname)
+                sessionStorage.setItem('userDetail' , JSON.stringify(result))
+                dispatch(setUser(result.user))
+                console.log("userp",user)
             }
         } catch (error) {
             setisLogin(false)

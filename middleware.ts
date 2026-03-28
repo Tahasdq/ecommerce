@@ -13,17 +13,20 @@ export async  function middleware (request: NextRequest) {
   }
 
   // Handle logout for both
-  if (pathname === '/logout') {
-    if(adminToken){
-      const response = NextResponse.redirect(new URL('/login', request.url));
-      response.cookies.delete('adminToken');
-      return response;
-    }
-    const response = NextResponse.redirect(new URL('/', request.url));
-
-    response.cookies.delete('customerToken'); 
-    return response;
-  }
+  // if (pathname === '/logout') {
+  //   if(adminToken){
+  //     const response = NextResponse.redirect(new URL('/login', request.url));
+  //     response.cookies.delete('adminToken');
+  //     return response;
+  //   }
+  //   else if(customerToken){
+  //     const response = NextResponse.redirect(new URL('/', request.url));
+  //     response.cookies.delete('customerToken'); 
+  //     return response;
+  //   }
+    // return  NextResponse.redirect(new URL('/login', request.url));
+    
+  // }
   
   //pathname vs pathname.startsWith
   if (adminToken && pathname=="/") {
@@ -45,6 +48,10 @@ export async  function middleware (request: NextRequest) {
   if (customerToken && pathname === "/login" || pathname === "/register") {
     return NextResponse.redirect(new URL("/", request.url));
   }
+  // if(!customerToken && pathname==="/"){
+  //   console.log("called")
+  //   return NextResponse.redirect(new URL("/", request.url));
+  // }
 
 
 

@@ -21,9 +21,10 @@ interface AdminHeaderProps {
 
 export function AdminHeader({ title, subtitle }: AdminHeaderProps) {
  const router =  useRouter()
- const logout = ()=>{
-  sessionStorage.removeItem('persist:root')
-  router.push("/logout")
+ const logout = async ()=>{
+  console.log("called")
+  await fetch("/api/logout" , {method:"POST"})
+  router.push("/login")
 }
   return (
     <header className="flex items-center justify-between h-16 px-6 bg-card border-b border-border">

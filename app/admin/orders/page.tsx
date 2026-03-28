@@ -1,7 +1,7 @@
 // app/admin/orders/page.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, Filter, MoreHorizontal, Eye, Edit, Trash2 } from "lucide-react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { Input } from "@/components/ui/input";
@@ -13,20 +13,24 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { OrderService } from "@/services/admin/order.services";
+import {orderStatus} from "@/lib/constants"
+import { toast } from "sonner";
+import useOrder from "@/hooks/admin/useOrder";
 
-const orders = [
-  { id: "#ORD-7352", customer: "Sarah Johnson", email: "sarah.j@email.com", items: 3, amount: "$256.00", status: "Completed", date: "Jan 25, 2026", payment: "Credit Card" },
-  { id: "#ORD-7351", customer: "Michael Chen", email: "m.chen@email.com", items: 2, amount: "$189.50", status: "Processing", date: "Jan 25, 2026", payment: "PayPal" },
-  { id: "#ORD-7350", customer: "Emma Williams", email: "emma.w@email.com", items: 5, amount: "$432.00", status: "Pending", date: "Jan 24, 2026", payment: "Credit Card" },
-  { id: "#ORD-7349", customer: "James Wilson", email: "j.wilson@email.com", items: 1, amount: "$78.00", status: "Completed", date: "Jan 24, 2026", payment: "Debit Card" },
-  { id: "#ORD-7348", customer: "Lisa Anderson", email: "lisa.a@email.com", items: 4, amount: "$567.00", status: "Cancelled", date: "Jan 23, 2026", payment: "Credit Card" },
-  { id: "#ORD-7347", customer: "David Brown", email: "d.brown@email.com", items: 2, amount: "$234.00", status: "Completed", date: "Jan 23, 2026", payment: "PayPal" },
-  { id: "#ORD-7346", customer: "Amy Lee", email: "amy.lee@email.com", items: 6, amount: "$890.00", status: "Processing", date: "Jan 22, 2026", payment: "Credit Card" },
-  { id: "#ORD-7345", customer: "Robert Taylor", email: "r.taylor@email.com", items: 3, amount: "$345.00", status: "Pending", date: "Jan 22, 2026", payment: "Debit Card" },
-];
+// const orders = [
+//   { id: "#ORD-7352", customer: "Sarah Johnson", email: "sarah.j@email.com", items: 3, amount: "$256.00", status: "Completed", date: "Jan 25, 2026", payment: "Credit Card" },
+//   { id: "#ORD-7351", customer: "Michael Chen", email: "m.chen@email.com", items: 2, amount: "$189.50", status: "Processing", date: "Jan 25, 2026", payment: "PayPal" },
+//   { id: "#ORD-7350", customer: "Emma Williams", email: "emma.w@email.com", items: 5, amount: "$432.00", status: "Pending", date: "Jan 24, 2026", payment: "Credit Card" },
+//   { id: "#ORD-7349", customer: "James Wilson", email: "j.wilson@email.com", items: 1, amount: "$78.00", status: "Completed", date: "Jan 24, 2026", payment: "Debit Card" },
+//   { id: "#ORD-7348", customer: "Lisa Anderson", email: "lisa.a@email.com", items: 4, amount: "$567.00", status: "Cancelled", date: "Jan 23, 2026", payment: "Credit Card" },
+//   { id: "#ORD-7347", customer: "David Brown", email: "d.brown@email.com", items: 2, amount: "$234.00", status: "Completed", date: "Jan 23, 2026", payment: "PayPal" },
+//   { id: "#ORD-7346", customer: "Amy Lee", email: "amy.lee@email.com", items: 6, amount: "$890.00", status: "Processing", date: "Jan 22, 2026", payment: "Credit Card" },
+//   { id: "#ORD-7345", customer: "Robert Taylor", email: "r.taylor@email.com", items: 3, amount: "$345.00", status: "Pending", date: "Jan 22, 2026", payment: "Debit Card" },
+// ];
 
 const statusStyles: Record<string, string> = {
   Completed: "status-completed",
@@ -38,17 +42,28 @@ const statusStyles: Record<string, string> = {
 export default function OrdersPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const orderService = new OrderService()
+  const {orders ,fetchOrders}= useOrder()
+  useEffect(()=>{
+      fetchOrders()
+  },[])
 
-  const filteredOrders = orders.filter((order) => {
-    const matchesSearch = order.customer.toLowerCase().includes(searchQuery.toLowerCase()) || order.id.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "all" || order.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+
+  // const filteredOrders = orders.filter((order) => {
+  //   const matchesSearch = order.customer.toLowerCase().includes(searchQuery.toLowerCase()) || order.id.toLowerCase().includes(searchQuery.toLowerCase());
+  //   const matchesStatus = statusFilter === "all" || order.status === statusFilter;
+  //   return matchesSearch && matchesStatus;
+  // });
+  const setStatus =async (orderId:String,status:string)=>{
+    console.log("orderId,status",orderId,status)
+    const response  = await orderService.orderStatusUpdate(orderId,{orderStatus:status})
+    if(response){
+      fetchOrders()
+      toast.success("Order updatted successfully")
+    }
+  }
 
   return (
-    <div className="min-h-screen">
-      <AdminHeader title="Orders" subtitle="Manage and track customer orders" />
-
       <div className="p-6 space-y-6">
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4">
@@ -87,23 +102,34 @@ export default function OrdersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredOrders.map((order) => (
-                <TableRow key={order.id} className="cursor-pointer hover:bg-muted/50">
-                  <TableCell className="font-medium">{order.id}</TableCell>
+              {Array.isArray(orders) && orders.map((order) => (
+                <TableRow key={order._id} className="cursor-pointer hover:bg-muted/50">
+                  <TableCell className="font-medium">{order.orderId}</TableCell>
                   <TableCell>
-                    <div>
-                      <p className="font-medium">{order.customer}</p>
-                      <p className="text-xs text-muted-foreground">{order.email}</p>
-                    </div>
+                      <p className="text-xs text-muted-foreground">{order?.email}</p>
                   </TableCell>
-                  <TableCell>{order.items} items</TableCell>
+                  <TableCell>{order?.items?.length}</TableCell>
                   <TableCell className="font-medium">{order.amount}</TableCell>
-                  <TableCell className="text-muted-foreground">{order.payment}</TableCell>
+                  <TableCell className="text-muted-foreground">{order.paymentStatus}</TableCell>
                   <TableCell>
-                    <span className={cn("status-badge", statusStyles[order.status])}>{order.status}</span>
+                    {/* <span className={cn("status-badge", statusStyles[order.orderStatus])}>{order.orderStatus}</span> */}
+                  <TableCell className="text-muted-foreground">
+                  <Select value={order.orderStatus} onValueChange={(status)=>setStatus(order._id,status)}>
+                    <SelectTrigger className="w-full max-w-48">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                       {orderStatus.map((status=>{
+                        return (<SelectItem value={status.value}>{status.name}</SelectItem>)
+                       }))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </TableCell>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">{order.date}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-muted-foreground">{order.createdAt.toLocaleDateString()}</TableCell>
+                  {/* <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>
@@ -114,13 +140,12 @@ export default function OrdersPage() {
                         <DropdownMenuItem className="text-destructive"><Trash2 className="mr-2 h-4 w-4" />Cancel Order</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                  </TableCell>
+                  </TableCell> */}
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </div>
       </div>
-    </div>
   );
 }

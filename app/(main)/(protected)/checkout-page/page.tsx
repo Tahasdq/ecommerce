@@ -4,51 +4,66 @@ import CheckoutForm from '@/components/app/Checkout/CheckoutForm'
 import Wrapper from '@/components/app/Wrapper/Wrapper'
 import { useAppSelector } from '@/lib/redux/hooks/hooks'
 import { BaseService } from '@/services/base.service'
+import { zodResolver } from '@hookform/resolvers/zod'
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import z from 'zod'
 
-// Sample cart data - in a real app, this would come from your cart state/context
-const initialCartItems: CartItem[] = [
-  {
-    id: '1',
-    name: 'Wireless Bluetooth Headphones',
-    price: 79.99,
-    quantity: 1,
-    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=200&fit=crop',
-    variant: 'Black',
-  },
-  {
-    id: '2',
-    name: 'Minimalist Watch',
-    price: 149.99,
-    quantity: 1,
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=200&fit=crop',
-    variant: 'Silver',
-  },
-  {
-    id: '3',
-    name: 'Premium Backpack',
-    price: 89.99,
-    quantity: 2,
-    image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=200&h=200&fit=crop',
-    variant: 'Navy Blue',
-  },
-]
+const checkoutSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
+  name: z.string().min(2, 'Last name must be at least 2 characters'),
+  address: z.string().min(5, 'Please enter a valid address'),
+  city: z.string().min(2, 'Please enter a valid city'),
+  state: z.string().min(1, 'Please select a state'),
+  zipCode: z.string().min(5, 'Please enter a valid ZIP code'),
+  country: z.string().min(1, 'Please select a country'),
+  phone:z.string().min(11,'Please enter your phone number')
+})
+interface CheckoutFormProps {
+  onSubmit: (data: CheckoutFormValues) => void
+}
+
+export type CheckoutFormValues = z.infer<typeof checkoutSchema>
 
 const page = () => {
   const [cartData, setCartData] = useState<CartItem[]>([])
 
   const {cartItems,totalPrice} = useAppSelector((state)=>state.cart)
+  const userDetails = useAppSelector((state)=>state.user) 
+  
   useEffect(()=>{
     setCartData(cartItems)
+    if(userDetails){
+      form.reset(
+        {
+          email:userDetails.email
+        }
+      )
+    }
   },[])
 
-  const handleSubmit = async (data: unknown) => {
+
+   const form = useForm<CheckoutFormValues>({
+    resolver: zodResolver(checkoutSchema),
+    defaultValues: {
+      email: "",
+      name:"",
+      address: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      country: 'Pakistan',
+      phone:''
+    },
+  })
+  
+  const handleSubmit = async (data: CheckoutFormValues) => {
     console.log('Order submitted:', data)
     try {
       const baseService = new BaseService()
-    const res = await baseService.post(`/payment` ,{cartData,totalPrice ,data, withCredentials: true })
+       const res = await baseService.post(`/payment` ,{cartData,totalPrice ,data, withCredentials: true })
       window.location.href = res.url;
     } catch(error){
        alert("Checkout failed")
@@ -68,7 +83,7 @@ const page = () => {
       <div className="grid gap-8 lg:grid-cols-5">
         {/* Left Side - Checkout Form */}
         <div className="lg:col-span-3">
-          <CheckoutForm onSubmit={handleSubmit} />
+          <CheckoutForm onSubmit={handleSubmit} form = {form} />
         </div>
 
         {/* Right Side - Cart Summary */}

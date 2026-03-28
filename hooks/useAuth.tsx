@@ -8,7 +8,7 @@ const useAuth = () => {
     try {
       const authService = new AuthService();
       const userExist = await authService.isMe();
-      setUser(userExist)
+      setUser(userExist.user)
     } catch (error) {
        setUser(null)
     }

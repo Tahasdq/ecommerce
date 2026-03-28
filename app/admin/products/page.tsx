@@ -13,33 +13,38 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { Dialog } from "@/components/ui/dialog";
-import {AddProductModal} from "@/components/admin/Products/AddProductModal";
+import { ProductModal} from "@/components/admin/Products/ProductModal";
 import ProductService from "@/services/product.service";
-import { Product, ProductFormValues } from "@/types/product.type";
+import { categoriesEnum, Category, createProductFormValues, editProductFormValues, EMPTY_PRODUCT, Product, ProductFetched, productStatusEnum, stockStatusStyles } from "@/types/product.type";
 import { toast } from "sonner";
+import Spinner from "@/components/Spinner/Spinner";
 
 
 
-const stockStatusStyles: Record<string, string> = {
-  "inStock": "bg-green-100 text-green-800",
-  "lowStock": "bg-amber-100 text-amber-800",
-  "outOfStock": "bg-red-100 text-red-800",
-};
+
 
 export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddProductsModal, setShowAddProductsModal] = useState(false);
-  const [products,setProducts]=useState<Product[]>([])
+  const [products,setProducts]=useState<ProductFetched[]>([])
+  const [product,setProduct]=useState<ProductFetched | null>(EMPTY_PRODUCT)
+  const [action , setAction] = useState("")
+  const [loading,setLoading]=useState(false)
 
-  const product= new ProductService()
   const fetchProducts = async () => {
-        const products =  await product.getProducts()
-        setProducts(products)
+    try {
+      setLoading(true)
+      const product= new ProductService()
+      const products =  await product.getProducts()
+      setProducts(products.data)
+    } catch (error) {
+      toast.error("Failed to fetch products")
+    } finally{
+      setLoading(false)
+    }
+    
     }
   useEffect(()=>{
-    
-    
     fetchProducts()
   },[showAddProductsModal])
 
@@ -52,22 +57,51 @@ export default function ProductsPage() {
   }
   const deleteProduct = async (productId:string)=>{
     try {
+      setLoading(true)
       const product= new ProductService()
       await product.deleteProduct(productId)
       toast.success("Product deleted successfully")
       fetchProducts()
     } catch (error) {
       toast.error("Failed to delete product")
+    }finally{
       fetchProducts()
+      setLoading(false)
     }
     
   }
-
+  const viewProduct = async(productId:string)=>{
+    try{
+        const product= new ProductService()
+        const productsResponse = await product.getProductById(productId)
+        console.log("productsResponse",productsResponse)
+        setProduct(productsResponse.data)
+        setShowAddProductsModal(true)
+        setAction("view")
+    }catch(error){
+      toast.error("Failed to view product")
+    }
+  }
+  const editProduct = async(productId:string)=>{
+    try{
+        const product= new ProductService()
+        const productsResponse = await product.getProductById(productId)
+        console.log("productsResponse",productsResponse)
+        setProduct(productsResponse.data)
+        setShowAddProductsModal(true)
+        setAction("edit")
+    }catch(error){
+      toast.error("Failed to view product")
+    }
+  }
+  
+  
   return (
     <div className="min-h-screen">
       <AdminHeader title="Products" subtitle="Manage your product inventory" />
 
-      <div className="p-6 space-y-6">
+     {!loading? 
+     <div className="p-6 space-y-6">
         {/* Actions Bar */}
         <div className="flex flex-col sm:flex-row gap-4 justify-between">
           <div className="relative flex-1 max-w-md">
@@ -118,16 +152,16 @@ export default function ProductsPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="secondary">{product.category}</Badge>
+                    <Badge variant="secondary">{categoriesEnum[product.category]}</Badge>
                   </TableCell>
                   <TableCell className="font-medium">{product.price}</TableCell>
-                  <TableCell>{product.stock} units</TableCell>
+                  <TableCell>{product.totalStock} units</TableCell>
                   <TableCell>
                     <span
                       className={`status-badge ${stockStatusStyles[product.status]}`}
                     >
-                      {"intock"}
-                    </span>
+                      {productStatusEnum[product.status]}
+                      </span>
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
@@ -137,11 +171,11 @@ export default function ProductsPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={()=>viewProduct(product._id)}>
                           <Eye className="mr-2 h-4 w-4" />
                           View Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={()=>editProduct(product._id)}>
                           <Edit className="mr-2 h-4 w-4" />
                           Edit Product
                         </DropdownMenuItem>
@@ -157,11 +191,19 @@ export default function ProductsPage() {
             </TableBody>
           </Table>
         </div>
-      </div>
+      </div>:<div className="w-full h-screen flex justify-center items-center">
+          <Spinner size={80}/>
+          </div>
+      
+      }
 
-      <AddProductModal
+      <ProductModal
         open={showAddProductsModal}
         onOpenChange={setShowAddProductsModal}
+        product={product}
+        setProduct={setProduct}
+        action={action}
+        setAction={setAction}
       />
     </div>
   );

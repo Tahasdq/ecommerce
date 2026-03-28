@@ -12,8 +12,8 @@ export interface CartItem {
   name: string
   price: number
   quantity: number
-  image: string
-  variant?: string
+  image?: string
+  variantId:string
 }
 
 interface CartSummaryProps {

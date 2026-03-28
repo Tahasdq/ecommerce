@@ -1,11 +1,15 @@
 import Container from "@/components/app/Container/Container";
-import { Hero, NewArrival , Reviews } from "@/components/home/index";
+import { MiddleSection } from "@/components/app/MiddleSection/MiddleSection";
+import BrowseByDress from "@/components/home/BrowseByDress";
+import { Hero , Reviews } from "@/components/home/index";
 
 export default function Home() {
   return (
     <Container>
         <Hero />
-        <NewArrival />
+        <MiddleSection heading="New Arrival"  productType="newArrival"  route="/newArrival"/>
+        <MiddleSection heading="Top Selling"  productType="topSelling"  route="/products"/>
+        <BrowseByDress/>
         <Reviews />
     </Container>
   );

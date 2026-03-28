@@ -30,6 +30,7 @@ import useAuth from "@/hooks/useAuth";
 
 const Header = () => {
   const {toggleSidebar} = useSidebar()
+  const [toggleAuth,setToogleAuth]= useState(false)
    const { user, checkAuth } = useAuth();
    const pathname = usePathname()
    console.log("user",user)
@@ -46,16 +47,23 @@ const Header = () => {
 
   
  
-  const logout = ()=>{
+  const logout = async ()=>{
+    console.log("logout called")
     // sessionStorage.removeItem('persist:root')
-    router.push("/logout")
+    await fetch("/api/logout" ,  { method: "POST" });
+    router.push("/")
+    await checkAuth()
+    toast.success("Logout")
   }
 
   const redirectToCart =  async ()=>{
       router.push("/cart")
   }
+  // const onClose = (value)=>{
+  //   setToogleAuth(false)
+  // }
   return (
-    <div className="sticky top-0 z-10 bg-white/70 backdrop-blur-sm transition-colors duration-300">
+    <div onClick={()=>setToogleAuth(false)}  className="sticky top-0 z-10 bg-white/70 backdrop-blur-sm transition-colors duration-300">
       <Wrapper className={`flex flex-row justify-between  z-10 mt-0 py-5 h-auto`}>
         <CardContent className="flex flex-row items-center gap-2">
           <Menu className="md:hidden cursor-pointer" onClick={toggleSidebar} />
@@ -64,9 +72,9 @@ const Header = () => {
           </Link> 
           <Navbar className="hidden  md:block" />
         </CardContent>
-        <CardContent className="flex flex-row gap-7 relative  items-center">
+        <CardContent className="flex flex-row relative  items-center justify-center gap-7 ">
           <SearchBar />
-          <div onClick={redirectToCart} className="relative  cursor-pointer! flex gap-3">   {/* why ()=> not working   */}
+          <div onClick={redirectToCart} className="relative  cursor-pointer! flex  gap-3">   {/* why ()=> not working   */}
            <Badge className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums absolute left-4 -top-3">
             {cartItemsLength}
            </Badge>
@@ -74,18 +82,24 @@ const Header = () => {
          
         </div>
         {
-          user && 
+          user ?
           <>
-          <LogOut onClick={logout}   size={35} className="inline-block cursor-pointer" /> 
-          <User onClick={()=>router.push("/user-details")} size={35}  className="cursor-pointer"/> 
-          </>
+          <div className="flex">
+          <LogOut onClick={logout}   size={24} className="inline-block cursor-pointer" /> </div>
+          <div className="flex"><User onClick={()=>router.push("/user-details")} size={24}  className="cursor-pointer"/> </div>
+          </>:<div onClick={(e)=>{setToogleAuth(true); e.stopPropagation()} } className="text-xs md:min-w-25 cursor-pointer"><Link   href="/"></Link >Sign In/Sign Up</div>
         }
         </CardContent>
 
       </Wrapper>
-        {/* <AuthModal
+        { toggleAuth &&
+
+      
+         <AuthModal
         type="Login"
-        /> */}
+        to="/"
+        />
+        }
       </div>
   );
 };

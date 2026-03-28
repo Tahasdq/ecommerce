@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   output:"standalone",
   distDir: "build",
   images: {
-    domains: ['next-ecommerce-shopco.vercel.app' , 'images.unsplash.com'],
+    domains: ['next-ecommerce-shopco.vercel.app' , 'images.unsplash.com' , 'res.cloudinary.com'],
   },
   // experimental: {
   //   serverActions: false,

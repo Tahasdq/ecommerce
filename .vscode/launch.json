@@ -6,9 +6,10 @@
     "configurations": [
         {
       "name": "Next.js: debug client-side",
-      "type": "chrome",
+      "type": "node-terminal",
       "request": "launch",
-      "url": "http://localhost:3000"
+      "command":"npm run dev -- --inspect",
+      // "url": "http://localhost:3000"
     },
     ]
 }

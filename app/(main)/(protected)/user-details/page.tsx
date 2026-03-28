@@ -1,17 +1,21 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, Package, Settings, LogOut } from "lucide-react";
 import Wrapper from "@/components/app/Wrapper/Wrapper";
+import useOrder from "@/hooks/admin/useOrder";
+import { useAppSelector } from "@/lib/redux/hooks/hooks";
+import { useRouter } from "next/navigation";
 
 /* =====================
    Sub Components
 ===================== */
 
 const ProfileTab = () => {
+  const user =useAppSelector((state)=>state.user)
   return (
     <Card>
       <CardHeader>
@@ -21,19 +25,19 @@ const ProfileTab = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <p className="text-sm text-muted-foreground">Full Name</p>
-            <p className="font-medium">User Name</p>
+            <p className="font-medium">{user?.name}</p>
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Email</p>
-            <p className="font-medium">user@email.com</p>
+            <p className="font-medium">{user?.email}</p>
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Phone</p>
-            <p className="font-medium">+92 300 0000000</p>
+            <p className="font-medium">{user?.phone}</p>
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Joined</p>
-            <p className="font-medium">Jan 2026</p>
+            <p className="font-medium">{user?.createdAt}</p>
           </div>
         </div>
       </CardContent>
@@ -42,22 +46,27 @@ const ProfileTab = () => {
 };
 
 const OrdersTab = () => {
+  const {orders , getOrdersByUserId} = useOrder()
+  const userId =useAppSelector((state)=>state.user._id)
+  useEffect(()=>{
+    getOrdersByUserId(userId)
+  },[userId])
   return (
     <Card>
       <CardHeader>
         <CardTitle>My Orders</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        {[1, 2, 3].map((order) => (
+        {orders.map((order) => (
           <div
-            key={order}
+            key={order._id}
             className="flex items-center justify-between rounded-lg border p-4"
           >
             <div>
-              <p className="font-medium">Order #{order}234</p>
-              <p className="text-sm text-muted-foreground">Placed on Jan 20, 2026</p>
+              <p className="font-medium">Order #{order?.orderId}</p>
+              <p className="text-sm text-muted-foreground">{order?.createdAt.toLocaleString()}</p>
             </div>
-            <span className="text-sm font-medium text-green-600">Delivered</span>
+            <span className="text-sm font-medium text-green-600">{order?.orderStatus}</span>
           </div>
         ))}
       </CardContent>
@@ -87,6 +96,12 @@ const UserDetailPage = () => {
   const [activeTab, setActiveTab] = useState<"profile" | "orders" | "settings">(
     "profile"
   );
+  const router = useRouter()
+  const user =useAppSelector((state)=>state.user)
+  const logout = async ()=>{
+    await fetch("/api/logout" ,  { method: "POST" });
+    router.push("/")
+  }
 
   return (
     <Wrapper>
@@ -100,8 +115,8 @@ const UserDetailPage = () => {
               <AvatarFallback>U</AvatarFallback>
             </Avatar>
             <div className="text-center">
-              <CardTitle className="text-lg">User Name</CardTitle>
-              <p className="text-sm text-muted-foreground">user@email.com</p>
+              <CardTitle className="text-lg">{user.fullName??""}</CardTitle>
+              <p className="text-sm text-muted-foreground">{user.email}</p>
             </div>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
@@ -132,7 +147,7 @@ const UserDetailPage = () => {
               Settings
             </Button>
 
-            <Button variant="destructive" className="mt-4 gap-2">
+            <Button onClick={logout} variant="destructive" className="mt-4 gap-2">
               <LogOut className="h-4 w-4" />
               Logout
             </Button>

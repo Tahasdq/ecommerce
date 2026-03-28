@@ -16,6 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import SizeButton from "@/components/ui/SizeButton";
 import { Slider } from "@/components/ui/slider";
 import ProductService from "@/services/product.service";
+import { ProductFetched } from "@/types/product.type";
 import { Check, ChevronRight, SlidersVertical, Star } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from 'next/navigation'
@@ -24,7 +25,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 const page = () => {
   const router = useRouter()
-  const [products , setProducts]=useState([])
+  const [products , setProducts]=useState<ProductFetched[]>([])
   const [loading ,setLoading]=useState(false)
 
   useEffect(() => {
@@ -40,8 +41,9 @@ const page = () => {
         res = await productService.getFilteredProducts(filters)
       } else {
         res = await productService.getProducts()
+        console.log("res",res)
       }
-      setProducts(res)
+      setProducts(res.data)
     } catch (err) {
       console.error("Error fetching products:", err)
     } finally {
@@ -57,36 +59,38 @@ const page = () => {
 
  
   
-  const navigateToProduct = (id)=>{
+  const navigateToProduct = (id:string)=>{
     router.push(`/product/${id}`)
   }
 
   return (
-    <Wrapper className="flex flex-col sm:flex-row border-2">
+    <Wrapper className="flex flex-col sm:flex-row ">
       <Filter onFilterChange={handleFilterChange}/>
-      <div className="w-full sm:min-w-4/5 products border-4 flex flex-wrap gap-4 p-5">
-      { !loading ? 
-        products.length > 0 ? products.map((item)=>(
-           <Card
+       <Card className="sm:min-w-4/5  border-y-2 rounded-t-lg">
+      { 
+      !loading ? 
+      <div className="rounded-t-lg p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+       { products.length > 0 ? products.map((item)=>(
+        <Card
           key={item._id}
-          className="min-w-70  max-h-[400px] min-h-[400px] py-0 border-0  shadow-none cursor-pointer"
+          className="w-full  h-[450px] py-0  shadow-none cursor-pointer "
           onClick={()=>navigateToProduct(item._id)}
-        >
-          <div className="product-image relative w-full h-full overflow-hidden  border-2 rounded-2xl ">
+          >
+          <div className="product-image relative w-full h-full overflow-hidden rounded-xl">
             <Image
-              src="https://next-ecommerce-shopco.vercel.app/images/header-res-homepage.png"
+              src={`https://res.cloudinary.com/dvonwxpnl/image/upload/f_auto,q_auto,w_300,h_300,c_fill/${item.imagePublicId}.jpg`}
               alt="sample"
               fill
               objectFit="cover"
               className="hover:scale-110 transition-all duration-500 "
             />
           </div>
-          <div className="product-description cursor-pointer flex flex-col gap-3">
+          <div className="product-description cursor-pointer flex flex-col gap-3 p-3">
             <div className="text-xl font-semibold">
               {item.name}
             </div>
             <div className="flex gap-0.5">
-              {Array.from({length: item?.star}).map((_, idx) => (
+              {Array.from({length: Number(item?.star)}).map((_, idx) => (
                 <Star
                   key={idx}
                   size={20}
@@ -94,17 +98,18 @@ const page = () => {
                 />
               ))}
             </div>
-            <div className="text-xl font-semibold">{item.price}$</div>
+            <div className="text-xl font-semibold">Rs{item.price}</div>
           </div>
         </Card>
         )) : <div className="w-full flex justify-center items-center text-xl text-gray-500">
           No products found
-        </div>
-      : <div className=" w-full flex justify-center items-center">
+        </div>}
+      </div>
+      : <div className=" w-full h-full flex justify-center items-center">
           <Spinner size={60}/>
           </div>
       }
-      </div>
+      </Card>
     </Wrapper>
   );
 };

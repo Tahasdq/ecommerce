@@ -50,3 +50,12 @@ export const colors: SelectedColor[]= [
       colorName:"green"
     }
   ] 
+
+
+export const orderStatus= [
+  {name:"Created",value:"created"},
+  {name:"Processing",value:"processing"},
+  {name:"Shipped",value:"shipped"},
+  {name:"Delivered",value:"delivered"},
+  {name:"Cancelled",value:"cancelled"},
+]  

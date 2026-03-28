@@ -103,7 +103,7 @@ const PaymentSuccessPage = () => {
           <div className="rounded-lg border p-3 text-sm text-left">
             <p>
               <span className="font-medium">Order ID:</span>{" "}
-              {order?._id}
+              {order?.orderId}
             </p>
             <p>
               <span className="font-medium">Status:</span>{" "}

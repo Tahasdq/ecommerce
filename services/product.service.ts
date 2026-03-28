@@ -1,9 +1,9 @@
 import { BaseService } from "./base.service";
 
-const ADD_PRODUCT = "product/createProduct"
-const GET_ALL_PRODUCTS = "product"
-const GET_PRODUCT_BY_ID = "product"
-const DELETE_PRODUCT_BY_ID = "product"
+const ADD_PRODUCT = "/product/createProduct"
+const GET_ALL_PRODUCTS = "/product"
+const GET_PRODUCT_BY_ID = "/product"
+const DELETE_PRODUCT_BY_ID = "/product"
 
 interface FilterParams {
     categories?: string[];
@@ -42,6 +42,9 @@ class ProductService extends BaseService{
     }
     async getProductById(id?:any,payload?:any){
         return this.get(`${GET_PRODUCT_BY_ID}/${id}`,payload)
+    }
+    async updateProductById(id?:any,payload?:any){
+        return this.patch(`${GET_PRODUCT_BY_ID}/${id}`,payload)
     }
 }
 

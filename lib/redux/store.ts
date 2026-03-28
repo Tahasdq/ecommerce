@@ -1,6 +1,7 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import cartReducer from './features/cartSlice'
 import modalReducer from "./features/modalSlice"
+import userReducer from "./features/userSlice"
 import sessionStorage  from 'redux-persist/lib/storage/session';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist";
 
@@ -8,11 +9,12 @@ import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, 
 const persistConfig = {
   key: "root",
   storage :sessionStorage ,
-  whitlist:['cart']
+  blacklist:['modal']
 };  
 const rootReducer = combineReducers({
-  cart: cartReducer,     // will be persisted
-  modal: modalReducer,   // not persisted
+  cart: cartReducer,    
+  modal: modalReducer,   
+  user:userReducer
 });
 
 const persistedReducer = persistReducer(persistConfig,rootReducer );

@@ -9,7 +9,7 @@ export class BaseService {
 
   async get(url:any, params?:any) {
     try {
-      const response = await axios.get(`${this.baseUrl}/${url}`, { params, withCredentials: true });
+      const response = await axios.get(`${this.baseUrl}${url}`, { params, withCredentials: true });
       return response.data;
     } catch (error:any) {
       if(error.response){
@@ -29,7 +29,47 @@ export class BaseService {
   }
   async post(url:any, payload:any) {
     try {
-      const response = await axios.post(`${this.baseUrl}/${url}`, payload ,  { withCredentials: true });
+      const response = await axios.post(`${this.baseUrl}${url}`, payload ,  { withCredentials: true  });
+      return response.data;
+    } catch (error:any) {
+      if(error.response){
+        const{status , data , success} = error?.response
+        throw  {
+          message:data.message,
+          status,
+          success:success,
+          original: error,
+        }
+      }
+      throw {
+        message :"check your internet connection"
+      }
+      
+    }
+  }
+  async put(url:any, payload:any) {
+    try {
+      const response = await axios.put(`${this.baseUrl}/${url}`, payload ,  { withCredentials: true });
+      return response.data;
+    } catch (error:any) {
+      if(error.response){
+        const{status , data , success} = error?.response
+        throw  {
+          message:data.message,
+          status,
+          success:success,
+          original: error,
+        }
+      }
+      throw {
+        message :"check your internet connection"
+      }
+      
+    }
+  }
+  async patch(url:any, payload:any) {
+    try {
+      const response = await axios.patch(`${this.baseUrl}/${url}`, payload ,  { withCredentials: true });
       return response.data;
     } catch (error:any) {
       if(error.response){

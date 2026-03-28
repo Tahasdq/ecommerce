@@ -38,9 +38,19 @@ type LoginInputs = {
 const  page =  () => {
   const authService = new AuthService()
   const  router = useRouter()
-  const [loading,setLoading] = useState<Boolean>(false)
+  const [loading,setLoading] = useState<boolean>(false)
 
-
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginInputs>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     setLoading(true)
     // console.log("form submitted",data)
@@ -65,8 +75,10 @@ const  page =  () => {
 
   }
 
+
   return (
-   <Login onSubmit = {onSubmit} loading={loading}/>
+  <Login control={control} handleSubmit={handleSubmit} modal ={false} errors={errors}  onSubmit = {onSubmit} loading={loading} openRegister={ (val:Boolean):void=>{} }/>
+
   )
 }
 

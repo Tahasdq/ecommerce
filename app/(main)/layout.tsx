@@ -35,7 +35,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background `}
         >
-        <Session>
+        {/* <Session> */}
         <StoreProvider>
           <SidebarProvider>
             <div className="md:hidden">
@@ -49,7 +49,7 @@ export default function RootLayout({
             </main>
           </SidebarProvider>
         </StoreProvider>
-        </Session>
+        {/* </Session> */}
       </body>
     </html>
   );

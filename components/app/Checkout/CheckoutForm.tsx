@@ -1,8 +1,5 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
 import {
   Form,
   FormControl,
@@ -22,55 +19,58 @@ import {
 } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+import {  useState } from 'react'
+import { CheckoutFormValues } from '@/app/(main)/(protected)/checkout-page/page'
+import { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 
-const checkoutSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  firstName: z.string().min(2, 'First name must be at least 2 characters'),
-  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
-  address: z.string().min(5, 'Please enter a valid address'),
-  city: z.string().min(2, 'Please enter a valid city'),
-  state: z.string().min(1, 'Please select a state'),
-  zipCode: z.string().min(5, 'Please enter a valid ZIP code'),
-  country: z.string().min(1, 'Please select a country'),
-  phone:z.string().min(11,'Please enter your phone number')
-})
-
-type CheckoutFormValues = z.infer<typeof checkoutSchema>
-
-interface CheckoutFormProps {
-  onSubmit: (data: CheckoutFormValues) => void
-}
-
-export default function CheckoutForm({ onSubmit }: CheckoutFormProps) {
-  const form = useForm<CheckoutFormValues>({
-    resolver: zodResolver(checkoutSchema),
-    defaultValues: {
-      email: '',
-      firstName: '',
-      lastName: '',
-      address: '',
-      city: '',
-      state: '',
-      zipCode: '',
-      country: '',
-      phone:''
-    },
-  })
-
-  const handleSubmit = (data: CheckoutFormValues) => {
-    onSubmit(data)
+interface FormValues { //refctor them to there app place
+  email: string,
+      name:string,
+      address: string,
+      city: string,
+      state: string,
+      zipCode: string,
+      country: string,
+      phone:string
   }
+  interface cities{
+    id:number,
+    name:string,
+    value:string
+  }
+const emptyCityState = {id:0 , name: "", value:""}
+const States = [
+  {text:"Sindh" , value:"sh"},
+  {text:"Punjab" , value:"pb"},
+  {text:"KPK" , value:"kp"},
+  {text:"Balochistan" , value:"bn"}
+]
+const citiesByStates :Record<string,cities[]>={
+    "sh":[{id:1 , name:"Hyderabad" , value:"hy"},{id:2 , name:"Karachi" , value:"kc"} ],
+    "pb":[{id:1 , name:"Lahore" , value:"lh"},{id:2 , name:"Multan" , value:"mt"} ],
+    "kp":[{id:1 , name:"Peshawar" ,value:"ps"},{id:2 , name:"Mardan" ,value:"md"} ],
+    "bn":[{id:1 , name:"Quetta" ,value:"qt"},{id:2 , name:"Ziarat" ,value:"zi"} ],
 
+}
+export default function CheckoutForm({ onSubmit , form }: { onSubmit : (data :CheckoutFormValues)=>void , form: UseFormReturn<FormValues> }) {
+  const [cities ,setCities] = useState<cities[] |null>([emptyCityState])
+ 
+ const changeState  = (field:ControllerRenderProps<FormValues ,"state">,value :string)=>{
+  field.onChange(value)
+  setCities(null)
+  setCities(citiesByStates[value] ?? [])
+  form.setValue('city', '')
+ }
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         {/* Contact Information */}
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Contact Information</CardTitle>
           </CardHeader>
           <CardContent className='space-y-4'>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="email"
@@ -78,7 +78,7 @@ export default function CheckoutForm({ onSubmit }: CheckoutFormProps) {
                 <FormItem>
                   <FormLabel>Email Address</FormLabel>
                   <FormControl>
-                    <Input placeholder="you@example.com" {...field} />
+                    <Input disabled  placeholder="you@example.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -98,6 +98,19 @@ export default function CheckoutForm({ onSubmit }: CheckoutFormProps) {
                 </FormItem>
               )}
             />
+             <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="John" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
              </CardContent>
         </Card>
@@ -108,35 +121,6 @@ export default function CheckoutForm({ onSubmit }: CheckoutFormProps) {
             <CardTitle className="text-lg">Shipping Address</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="firstName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>First Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="John" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="lastName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Last Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Doe" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
             <FormField
               control={form.control}
               name="address"
@@ -151,46 +135,59 @@ export default function CheckoutForm({ onSubmit }: CheckoutFormProps) {
               )}
             />
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="city"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>City</FormLabel>
-                    <FormControl>
-                      <Input placeholder="New York" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="state"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>State</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select  onValueChange={(value)=>changeState(field,value)} value={field.value}>
                       <FormControl>
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select state" />
+                          <SelectValue  placeholder="Select state" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="sh">Sindh</SelectItem>
-                        <SelectItem value="pb">Punjab</SelectItem>
-                        <SelectItem value="kp">KPK</SelectItem>
-                        <SelectItem value="bn">Balochistan</SelectItem>
+                        {
+                        States && States.map((state)=>(
+                          <SelectItem value={state.value}>{state.text}</SelectItem>
+                        ))
+                        }
                       </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
+              <FormField
+                control={form.control}
+                name="city"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>City</FormLabel>
+                    <Select  onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue  placeholder="Select city" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {
+                        cities && cities?.map((city)=>(
+                          <SelectItem value={city.value}>{city.name}</SelectItem>
+                        ))
+                        }
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+           
 
-            <div className="grid grid-cols-2 gap-4">
+            
               <FormField
                 control={form.control}
                 name="zipCode"
@@ -210,21 +207,15 @@ export default function CheckoutForm({ onSubmit }: CheckoutFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Country</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select country" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="pk">Pakistan</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                    <Input value={field.value} disabled className="w-full"/>
+                  </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
+               </div>
+
           </CardContent>
         </Card>
 
