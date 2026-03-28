@@ -33,11 +33,7 @@ const cartSlice = createSlice({
       if(!maxStock){console.log("stock not found")
         return
       }
-      const cartProductQuantity = state.cartItems.find((item)=>item.variantId == variantId)?.quantity
-      if(!cartProductQuantity) {
-        console.log("cartProductQuantity not found")
-        return
-      }
+      const cartProductQuantity = state.cartItems.find((item)=>item.variantId == variantId)?.quantity ?? 0;
       if(cartProductQuantity+quantity>maxStock){
           alert(`You already have ${cartProductQuantity} items in the cart. Only ${maxStock} are available in total`);
           return
@@ -73,11 +69,7 @@ const cartSlice = createSlice({
       if(!stock){return}
 
       const maxStock = stock
-      const cartProductQuantity = state.cartItems.find((item)=>item.variantId == variantId)?.quantity
-      if(!cartProductQuantity) {
-        console.log("cartProductQuantity not found")
-        return
-      }
+      const cartProductQuantity = state.cartItems.find((item)=>item.variantId == variantId)?.quantity ?? 0;
       if(cartProductQuantity+ itemQuantity>maxStock){
          return alert(`Only ${maxStock} item${maxStock > 1 ? "s" : ""} available in stock`);
       }
