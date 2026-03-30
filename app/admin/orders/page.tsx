@@ -2,24 +2,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Search, Filter, MoreHorizontal, Eye, Edit, Trash2 } from "lucide-react";
-import { AdminHeader } from "@/components/admin/AdminHeader";
+import { Search, Filter} from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { OrderService } from "@/services/admin/order.services";
 import {orderStatus} from "@/lib/constants"
 import { toast } from "sonner";
 import useOrder from "@/hooks/admin/useOrder";
+import Spinner from "@/components/Spinner/Spinner";
 
 // const orders = [
 //   { id: "#ORD-7352", customer: "Sarah Johnson", email: "sarah.j@email.com", items: 3, amount: "$256.00", status: "Completed", date: "Jan 25, 2026", payment: "Credit Card" },
@@ -42,26 +36,29 @@ const statusStyles: Record<string, string> = {
 export default function OrdersPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const orderService = new OrderService()
-  const {orders ,fetchOrders}= useOrder()
+  const {orders ,loading,fetchOrders,updateOrderStatusById}= useOrder()
   useEffect(()=>{
       fetchOrders()
   },[])
+  useEffect(()=>{
+    console.log("renders")
+  },[])
 
 
-  // const filteredOrders = orders.filter((order) => {
-  //   const matchesSearch = order.customer.toLowerCase().includes(searchQuery.toLowerCase()) || order.id.toLowerCase().includes(searchQuery.toLowerCase());
-  //   const matchesStatus = statusFilter === "all" || order.status === statusFilter;
-  //   return matchesSearch && matchesStatus;
-  // });
-  const setStatus =async (orderId:String,status:string)=>{
-    console.log("orderId,status",orderId,status)
-    const response  = await orderService.orderStatusUpdate(orderId,{orderStatus:status})
-    if(response){
-      fetchOrders()
-      toast.success("Order updatted successfully")
-    }
+const filteredOrders = orders.filter((order) => {
+  const matchesSearch = order?.email?.toLowerCase().includes(searchQuery.toLowerCase()) || order.orderId.toLowerCase().includes(searchQuery.toLowerCase());
+  const matchesStatus = statusFilter === "all" || order.orderStatus === statusFilter;
+  return matchesSearch && matchesStatus;
+});
+
+const setStatus =async (orderId:string,status:string)=>{
+  console.log("orderId,status",orderId,status)
+  const response  = await updateOrderStatusById(orderId,{orderStatus:status})
+  if(response){
+    fetchOrders()
+    toast.success("Order updated successfully")
   }
+}
 
   return (
       <div className="p-6 space-y-6">
@@ -87,7 +84,7 @@ export default function OrdersPage() {
         </div>
 
         {/* Orders Table */}
-        <div className="bg-card rounded-lg border border-border">
+        {!loading ? <div className="bg-card rounded-lg border border-border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -102,33 +99,37 @@ export default function OrdersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {Array.isArray(orders) && orders.map((order) => (
+              {
+              filteredOrders.length!==0 ?   filteredOrders.map((order)=>(
                 <TableRow key={order._id} className="cursor-pointer hover:bg-muted/50">
                   <TableCell className="font-medium">{order.orderId}</TableCell>
                   <TableCell>
                       <p className="text-xs text-muted-foreground">{order?.email}</p>
                   </TableCell>
                   <TableCell>{order?.items?.length}</TableCell>
-                  <TableCell className="font-medium">{order.amount}</TableCell>
-                  <TableCell className="text-muted-foreground">{order.paymentStatus}</TableCell>
+                  <TableCell className="font-medium">{order?.amount}</TableCell>
+                  <TableCell className="text-muted-foreground">{order?.paymentStatus}</TableCell>
                   <TableCell>
                     {/* <span className={cn("status-badge", statusStyles[order.orderStatus])}>{order.orderStatus}</span> */}
                   <TableCell className="text-muted-foreground">
-                  <Select value={order.orderStatus} onValueChange={(status)=>setStatus(order._id,status)}>
+                  <Select value={order?.orderStatus} onValueChange={(status)=>setStatus(order?._id,status)}>
                     <SelectTrigger className="w-full max-w-48">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
                        {orderStatus.map((status=>{
-                        return (<SelectItem value={status.value}>{status.name}</SelectItem>)
+                        return (<SelectItem value={status.value}>{status?.name}</SelectItem>)
                        }))}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
                 </TableCell>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">{order.createdAt.toLocaleDateString()}</TableCell>
+                  <TableCell className="text-muted-foreground">{new Date(order?.createdAt).toLocaleString('en-US', {
+                    dateStyle: 'medium', 
+                    timeStyle: 'short' 
+                  })}</TableCell>
                   {/* <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -142,10 +143,22 @@ export default function OrdersPage() {
                     </DropdownMenu>
                   </TableCell> */}
                 </TableRow>
-              ))}
+              )):<TableRow>
+      <TableCell colSpan={7} className="h-96 text-center">
+        <div className="flex flex-col items-center justify-center space-y-2">
+          <p className="text-lg font-medium">No Orders Found</p>
+          <p className="text-sm text-muted-foreground">
+            Try adjusting your search or filters.
+          </p>
+        </div>
+      </TableCell>
+    </TableRow>
+              }
             </TableBody>
           </Table>
-        </div>
+        </div>:<div className="w-full h-screen flex justify-center items-center">
+                <Spinner size={60}/>
+                </div>}
       </div>
   );
 }
