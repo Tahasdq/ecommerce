@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ShopCo Ecommerce Frontend
+
+A modern ecommerce frontend built with Next.js (App Router), TypeScript, Tailwind CSS, and Redux Toolkit.
+
+## Live Demo
+
+- [https://ecommerce-gilt-one-20.vercel.app/](https://ecommerce-gilt-one-20.vercel.app/)
+
+## Features
+
+- Customer-facing storefront with product discovery
+- Product listing with filter support (category, size, price)
+- Product details pages
+- Shopping cart with quantity updates
+- Checkout flow and payment initiation
+- Authentication flow (register, login, email verification)
+- Protected user pages
+- Admin dashboard for analytics
+- Admin product management (create, view, edit, delete)
+- Admin order management (status updates)
+
+## Tech Stack
+
+- Next.js 15 (App Router)
+- React 19 + TypeScript
+- Tailwind CSS 4
+- Redux Toolkit + redux-persist
+- React Hook Form + Zod
+- Axios
+- Radix UI + shadcn/ui-style components
+
+## Project Structure
+
+- `app/` - Routes and layouts (storefront, auth, admin, API proxy)
+- `components/` - UI and feature components
+- `services/` - API service layer
+- `lib/` - shared helpers, constants, and Redux store
+- `types/` - shared TypeScript types
+- `assets/`, `public/` - static assets
 
 ## Getting Started
 
-First, run the development server:
+### 1) Clone and install
+
+```bash
+git clone <your-repo-url>
+cd ecommerce
+npm install
+```
+
+### 2) Configure environment variables
+
+Create a `.env.local` file in the project root:
+
+```env
+NEXT_PUBLIC_BACKEND_BASE_LOCAL=http://localhost:8000
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_nextauth_secret
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
+NEXT_PUBLIC_GOOGLE_CLIENT_SECRET=your_google_client_secret
+```
+
+Notes:
+
+- `NEXT_PUBLIC_BACKEND_BASE_LOCAL` should point to your backend server.
+- This frontend proxies API requests through `app/api/[...path]/route.ts`.
+
+### 3) Run the app
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev    # start dev server (Turbopack)
+npm run build  # production build
+npm run start  # run production server on port 3000
+```
 
-## Learn More
+## Deployment
 
-To learn more about Next.js, take a look at the following resources:
+- This project is configured for deployment and can run on platforms like Azure App Service or Vercel.
+- A GitHub Actions workflow is included at `.github/workflows/master_ecommerce.yml`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Backend Requirement
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This repository is frontend-only and expects a compatible ecommerce backend API.
 
-## Deploy on Vercel
+## License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+No license is currently specified. Add a `LICENSE` file if you want to make usage terms explicit.
