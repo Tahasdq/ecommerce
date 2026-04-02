@@ -145,3 +145,16 @@ export const EMPTY_PRODUCT :ProductFetched= {
   imagePublicId:"", 
   _id:"",
 };
+export const INITIALIZE_PRODUCT :ProductFetched= {
+  name: "",
+  price: "",
+  description: "",
+  star: "1",
+  sku: "",
+  category: "" as any,
+  variants: [{ size: "" as any, color: "" as any,stock: 0 }],
+  totalStock:0,
+  status:"",
+  imagePublicId:"", 
+  _id:"",
+};

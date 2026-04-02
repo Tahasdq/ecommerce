@@ -9,30 +9,51 @@ const BACKEND_BASE =
 // "https://ecommercebackend-e8dbfjc6erbcdgha.centralindia-01.azurewebsites.net"
 process.env.NEXT_PUBLIC_BACKEND_BASE_LOCAL
 
-export async function GET(req: Request, { params }: any) {
-  return proxy(req, params.path, "GET");
+export async function GET(req: Request, props :{params: Promise<{ path: string[] }> }) {
+  // 1. Await the params object itself
+   const params = await props.params; 
+   
+   // 2. Now you can safely access the path
+   const paramsPath = params.path;
+  return proxy(req,paramsPath, "GET");
 }
 
-export async function POST(req: Request, { params }: any) {
-  console.log("BACKEND_BASE" , BACKEND_BASE)
-  return proxy(req, params.path, "POST");
+export async function POST(req: Request, props :{params: Promise<{ path: string[] }>}) {
+  // 1. Await the params object itself
+   const params = await props.params; 
+   
+   // 2. Now you can safely access the path
+   const paramsPath = params.path;
+  return proxy(req, paramsPath, "POST");
 }  
 
-export async function PUT(req: Request, { params }: any) {
-  return proxy(req, params.path, "PUT");
+export async function PUT(req: Request, props :{params: Promise<{ path: string[] }>}) {
+   // 1. Await the params object itself
+   const params = await props.params; 
+   
+   // 2. Now you can safely access the path
+   const paramsPath = params.path;
+  return proxy(req, paramsPath, "PUT");
 }
-export async function PATCH(req: Request, { params }: any) {
-  return proxy(req, params.path, "PATCH");
+export async function PATCH(req: Request, props :{params: Promise<{ path: string[] }>}) {
+   // 1. Await the params object itself
+   const params = await props.params; 
+   
+   // 2. Now you can safely access the path
+   const paramsPath = params.path;
+  return proxy(req, paramsPath, "PATCH");
 }
 
-export async function DELETE(req: Request, { params }: any) {
-  return proxy(req, params.path, "DELETE");
+export async function DELETE(req: Request,  props :{params: Promise<{ path: string[] }>}) {
+  // 1. Await the params object itself
+   const params = await props.params; 
+   
+   // 2. Now you can safely access the path
+   const paramsPath = params.path;
+  return proxy(req, paramsPath, "DELETE");
 }
 
 async function proxy(req: Request, path: string[], method: string) {
-  // console.log("BACKEND_BASE" , BACKEND_BASE)
-  // console.log("path",path)
-  // console.log("req",req)
   const { search } = new URL(req.url);
  const url = `${BACKEND_BASE}/api/${path.join("/")}${search}`;
 

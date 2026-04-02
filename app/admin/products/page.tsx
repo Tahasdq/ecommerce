@@ -27,7 +27,7 @@ export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddProductsModal, setShowAddProductsModal] = useState(false);
   const [products,setProducts]=useState<ProductFetched[]>([])
-  const [product,setProduct]=useState<ProductFetched | null>(EMPTY_PRODUCT)
+  const [product,setProduct]=useState<ProductFetched | null>()
   const [action , setAction] = useState("")
   const [loading,setLoading]=useState(false)
 
@@ -122,7 +122,7 @@ export default function ProductsPage() {
         {/* Products Table */}
         <div className="bg-card rounded-lg border border-border max-h-[70vh] overflow-y-auto">
           <Table >
-            <TableHeader className="!sticky top-0 z-10- bg-background">
+            <TableHeader className="!sticky top-0 z-10 bg-background">
               <TableRow>
                 <TableHead>Product</TableHead>
                 <TableHead> Category</TableHead>

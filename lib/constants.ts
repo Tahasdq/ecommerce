@@ -10,17 +10,17 @@ export const items : itemTypes[] = [
     {
       name:"On Sale",
        trigger:false,
-       href:"#"
+       href:"/products?sales"
     },
     {
       name:"New Arrivals",
       trigger:false,
-      href:"newArrival"
+      href:"/products?newArrival"
     },
     {
       name:"Brands" ,
       trigger:false,
-      href:"#"
+      href:"/products?brands"
     }
   ]
 

@@ -32,15 +32,18 @@ import {
   editProductFormValues,
   editProductSchema,
   EMPTY_PRODUCT,
+  INITIALIZE_PRODUCT,
   Size,
 } from "@/types/product.type";
-import { X, Plus } from "lucide-react";
+import { X, Plus, Eye } from "lucide-react";
 import ProductService from "@/services/product.service";
 import { toast } from "sonner";
 import Modal from "@/components/shared/Modal";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import ImageViewer from "@/components/shared/ImageViewer/ImageViewer";
 
 export function ProductModal({ open, onOpenChange ,product,setProduct,action , setAction}: AddProductModalProps) {
+  const [isImageViewerOpen , setIsImageViewrOpen] =useState<boolean>(false)
   let schematype = Boolean(product)
   const {
     register,
@@ -54,7 +57,7 @@ export function ProductModal({ open, onOpenChange ,product,setProduct,action , s
     formState: { errors, isSubmitting,isDirty },
   } = useForm<createProductFormValues | editProductFormValues>({
     resolver: zodResolver(schematype ? editProductSchema : createProductSchema),
-    defaultValues: EMPTY_PRODUCT
+    defaultValues: INITIALIZE_PRODUCT
   });
   useEffect(()=>{
     if(product){
@@ -69,16 +72,20 @@ export function ProductModal({ open, onOpenChange ,product,setProduct,action , s
         // variants: JSON.parse(product.variants), ??????why errror
         // image: product.imagePublicId
       })
-      setImagePreviews(`https://res.cloudinary.com/dvonwxpnl/image/upload/f_auto,q_auto,w_300,h_300,c_fill/${product.imagePublicId}.jpg`)
+      setImagePreviews(`https://res.cloudinary.com/dvonwxpnl/image/upload/${product.imagePublicId}.jpg`)
     }
     
   },[product])
+  useEffect(()=>{
+    console.log('getValues',getValues())
+  },[getValues()])
 
   useEffect(()=>{
     console.log("errors",errors)
   },[errors])
 
   const [imagePreviews, setImagePreviews] = useState<string>("");
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -101,7 +108,7 @@ export function ProductModal({ open, onOpenChange ,product,setProduct,action , s
         ...( raw.image && {productImage :raw.image}),
 
         }
-        delete editPayload.image
+        delete editPayload.image // deleting it bcz backend ws giving error for two image bckedn supports one image  with name "productImage"
         for(let i=0 ;i<Object.values(editPayload).length;i++){
           const key = Object.keys(editPayload)[i] as keyof editProductFormValues
           const value = editPayload[key]
@@ -132,6 +139,9 @@ export function ProductModal({ open, onOpenChange ,product,setProduct,action , s
       onOpenChange(false);
       reset();
       setImagePreviews('');
+      if (imageInputRef.current) {
+        imageInputRef.current.value = "";
+      }
 
     } catch (error :any) {
       console.error("Failed to create product:", error);
@@ -159,7 +169,11 @@ export function ProductModal({ open, onOpenChange ,product,setProduct,action , s
   const removeImage = () => {
     if (imagePreviews) URL.revokeObjectURL(imagePreviews); // Clean up
     setImagePreviews("");
-    resetField("image"); // Clear form value
+    setValue("image",undefined,{ shouldValidate: true,shouldDirty: true })
+    // resetField("image"); // Clear form value
+    if (imageInputRef.current) {
+      imageInputRef.current.value = "";
+    }
   };
 
   const handleClose = (open: boolean) => {
@@ -167,6 +181,9 @@ export function ProductModal({ open, onOpenChange ,product,setProduct,action , s
       getValues()
       reset(EMPTY_PRODUCT);
       setImagePreviews("");
+      if (imageInputRef.current) {
+        imageInputRef.current.value = "";
+      }
       setAction("");
       setProduct(null)
     }
@@ -180,6 +197,9 @@ export function ProductModal({ open, onOpenChange ,product,setProduct,action , s
   );
 };
 
+const openImageViewer = ()=>{
+  setIsImageViewrOpen(true)
+}
   return (
     
         <Modal open={open} handleClose={handleClose}>
@@ -367,6 +387,7 @@ export function ProductModal({ open, onOpenChange ,product,setProduct,action , s
                 <div className="relative">
                   <Input
                     id="images"
+                    ref={imageInputRef}
                     type="file"
                     disabled={action === "view"}
                     accept="image/*"
@@ -381,21 +402,31 @@ export function ProductModal({ open, onOpenChange ,product,setProduct,action , s
                 )}
 
                 {imagePreviews && (
-                  <div className="relative w-24 h-24 mt-3">
-                    <img
-                      src={imagePreviews}
-                      alt="Preview"
-                      className="h-24 w-24 object-cover rounded-lg border-2 border-gray-200"
-                    />
-                    <button
-                      type="button"
-                      onClick={removeImage}
-                      disabled={action === "view"}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
+                 <div className="relative group w-24 h-24 mt-3 cursor-pointer">
+            <img
+              src={imagePreviews}
+              alt="Preview"
+              className="h-24 w-24 object-cover rounded-lg border-2 border-gray-200"
+            />
+
+            {/* EYE ICON: We add 'group-hover/btn:opacity-0' */}
+            <div onClick={openImageViewer} className="opacity-0 group-hover:opacity-100 absolute inset-0 flex items-center justify-center transition-opacity duration-200 bg-black/20 rounded-lg">
+              <Eye className="text-white" />
+            </div>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevents the image click from firing
+                    removeImage();
+                  }}
+                  disabled={action === "view"}
+                  
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 z-20 hover:scale-110 transition-transform"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+                </div>
                 )}
               </div>
 
@@ -559,6 +590,17 @@ export function ProductModal({ open, onOpenChange ,product,setProduct,action , s
             }
             </DialogFooter>
           </form>
+          {isImageViewerOpen &&
+            <ImageViewer
+            isImageViewrOpen = {isImageViewerOpen}
+            closeImageViewer = {()=>{
+              setIsImageViewrOpen(false)
+              if(action!=="edit"){URL.revokeObjectURL(imagePreviews)}
+            }}
+            imageData={imagePreviews}
+            altText="Product image"
+            />
+          }
         </Modal>
       
   );

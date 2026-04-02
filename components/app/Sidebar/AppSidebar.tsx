@@ -15,7 +15,6 @@ import Image from "next/image"
 import logo from "@/assets/logo.svg";
 
 
-console.log("items " , items )
 export function AppSidebar() {
   return (
     <Sidebar >

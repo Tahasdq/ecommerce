@@ -13,6 +13,7 @@ import { addToCart } from "@/lib/redux/features/cartSlice";
 import ProductService from "@/services/product.service";
 import { buildCloudinaryUrl } from "@/lib/helpers";
 import { EMPTY_PRODUCT } from "@/types/product.type";
+import Spinner from "@/components/Spinner/Spinner";
 // import { products } from "@/components/home/ProductListing";
 
 // const PRODUCT_PRICE = "1200";
@@ -22,6 +23,7 @@ export default function Product() {
   const [selectedColor, setSelectedColor] = useState<string | null>("");
   const [selectedSize, setSelectedSize] = useState<string | null>("");
   const [qauntity, setQuantity] = React.useState(1);
+  const [loading, setLoading] = useState(false);
 
 
   
@@ -36,10 +38,17 @@ export default function Product() {
   const { productId } = params;
 
   const fetchProduct = async () => {
+    try {
+      setLoading(true);
     const product = new ProductService();
     const productData = await product.getProductById(productId);
     setProduct(productData.data);
-    console.log("productData", productData);
+    console.log("productData", productData);}
+    catch (err) {
+      console.error("Error fetching product:", err);
+    } finally { 
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -129,7 +138,7 @@ export default function Product() {
 
   return (
     <Card>
-      <Wrapper className="flex flex-col md:flex-row">
+      {!loading? <Wrapper className="flex flex-col md:flex-row">
         <CardContent className="w-full md:w-3/5">
           <div className="product-image relative rounded-3xl overflow-hidden cursor-pointer min-w-56 min-h-96 py-0">
             <Image
@@ -215,7 +224,9 @@ export default function Product() {
             </Button>
           </div>
         </CardContent>
-      </Wrapper>
+      </Wrapper>: <div className="w-full h-screen flex justify-center items-center">
+          <Spinner size={80}/>
+          </div>}
     </Card>
   );
 }

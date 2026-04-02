@@ -7,8 +7,8 @@ export default function Home() {
   return (
     <Container>
         <Hero />
-        <MiddleSection heading="New Arrival"  productType="newArrival"  route="/newArrival"/>
-        <MiddleSection heading="Top Selling"  productType="topSelling"  route="/products"/>
+        <MiddleSection heading="New Arrival"  productType="newArrival"  route="/products?type=newArrival"/>
+        <MiddleSection heading="Top Selling"  productType="topSelling"  route="/products?type=topSelling"/>
         <BrowseByDress/>
         <Reviews />
     </Container>
