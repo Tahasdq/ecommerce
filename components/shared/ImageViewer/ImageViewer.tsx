@@ -1,6 +1,11 @@
 import Modal from "../Modal";
-
-export default function ImageViewer({isImageViewrOpen , closeImageViewer,imageData , altText}){
+interface ImageViewer {
+    isImageViewrOpen:boolean
+    closeImageViewer :(val:boolean)=>void
+    imageData:string|File
+    altText:string
+}
+export default function ImageViewer({isImageViewrOpen , closeImageViewer,imageData , altText}:ImageViewer){
 
     return(
         <Modal open={isImageViewrOpen} handleClose={closeImageViewer} >
