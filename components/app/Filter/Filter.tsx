@@ -27,7 +27,7 @@ interface FilterProps {
 }
 
 const Filter = ({ onFilterChange }: FilterProps) => {
-  const [priceRange, setPriceRange] = useState([0, 1000]);
+  const [priceRange, setPriceRange] = useState([0, 10000]);
   const [selectedSizes, setSelectedSizes] = useState<any[]>([])
   const [selectedCategories, setSelectedCategories] = useState<any[]>([])
 
@@ -81,14 +81,14 @@ const Filter = ({ onFilterChange }: FilterProps) => {
   }
 
   const resetFilter = () => {
-    setPriceRange([0, 1000]);
+    setPriceRange([0, 10000]);
     setSelectedSizes([]);
     setSelectedCategories([]);
     
     const filterData = {
       categories: [],
       minPrice: 0,
-      maxPrice: 1000,
+      maxPrice: 10000,
       sizes: []
     };
     
@@ -136,7 +136,7 @@ const Filter = ({ onFilterChange }: FilterProps) => {
           className="absolute top-4  text-black mx-7"
           style={{
             left: `${
-              (priceRange[0] / 1000) * trackRef.current?.offsetWidth -
+              (priceRange[0] / 10000) * trackRef.current?.offsetWidth -
               (minLabelRef.current?.offsetWidth || 0) / 2
             }px`,
             transform: "translateX(-50%)",
@@ -147,7 +147,7 @@ const Filter = ({ onFilterChange }: FilterProps) => {
         </div>
         <div ref={trackRef} className="w-full">
           <Slider
-            max={1000}
+            max={10000}
             min={0}
             value={priceRange}
             onValueChange={handlePriceChange}
@@ -158,7 +158,7 @@ const Filter = ({ onFilterChange }: FilterProps) => {
           className="absolute  top-4   text-black mx-7"
           style={{
             left: `${
-              (priceRange[1] / 1000) * trackRef.current?.offsetWidth -
+              (priceRange[1] / 10000) * trackRef.current?.offsetWidth -
               (maxLabelRef.current?.offsetWidth || 0) / 2
             }px`,
             transform: "translateX(-50%)",

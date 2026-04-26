@@ -1,6 +1,5 @@
 "use client"
 import React, { useEffect, useState } from "react";
-import logo from "@/assets/logo.svg";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { CircleUserRound, LogOut, Menu, ShoppingCart, User } from "lucide-react";
@@ -63,12 +62,12 @@ const Header = () => {
   //   setToogleAuth(false)
   // }
   return (
-    <div onClick={()=>setToogleAuth(false)}  className="sticky top-0 z-10 bg-white/70 backdrop-blur-sm transition-colors duration-300">
+    <div onClick={()=>setToogleAuth(false)}  className="sticky top-0 z-100 bg-white/70 backdrop-blur-sm transition-colors duration-300">
       <Wrapper className={`flex flex-row justify-between  z-10 mt-0 py-5 h-auto`}>
         <CardContent className="flex flex-row items-center gap-2">
           <Menu className="md:hidden cursor-pointer" onClick={toggleSidebar} />
           <Link href={"/"}>
-          <Image  width={70} height={60} alt="logo" src={logo} />
+            <h2 className="text-2xl md:text-3xl font-black italic tracking-tighter">SHOP.CO</h2>
           </Link> 
           <Navbar className="hidden  md:block" />
         </CardContent>

@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Counter } from "@/components/ui/shadcn-io/counter";
 import { colors, sizes } from "@/lib/constants";
 import { useAppDispatch } from "@/lib/redux/hooks/hooks";
-import { Check } from "lucide-react";
+import { Check, Star } from "lucide-react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -14,6 +14,8 @@ import ProductService from "@/services/product.service";
 import { buildCloudinaryUrl } from "@/lib/helpers";
 import { EMPTY_PRODUCT } from "@/types/product.type";
 import Spinner from "@/components/Spinner/Spinner";
+import { Separator } from "@radix-ui/react-separator";
+import { toast } from "sonner";
 // import { products } from "@/components/home/ProductListing";
 
 // const PRODUCT_PRICE = "1200";
@@ -124,109 +126,147 @@ export default function Product() {
         stock:selectedVariant.stock
       };
       dispatch(addToCart(payload));
+      toast.success("Items added to cart")
     }
   };
 
   const handleSize = (size: string) => {
     setSelectedSize((prev) => (prev === size ? null : size));
+    setError((prev) => ({ ...prev, sizeSelectionError: false }));
   };
 
   const handleColor = (color: string) => {
     setSelectedColor((prev) => (prev === color ? null : color));
+    setError((prev) => ({ ...prev, colorSelctionError: false }));
   };
   const ImageUrl =  buildCloudinaryUrl(product?.imagePublicId)
 
   return (
-    <Card>
-      {!loading? <Wrapper className="flex flex-col md:flex-row">
-        <CardContent className="w-full md:w-3/5">
-          <div className="product-image relative rounded-3xl overflow-hidden cursor-pointer min-w-56 min-h-96 py-0">
-            <Image
-              src={ImageUrl}
-              alt="sample"
-              fill
-              objectFit="cover"
-              className="hover:scale-110 transition-all duration-500 "
-            />
-          </div>
-        </CardContent>
-        <CardContent className="w-full md:w-4/5 flex gap-4 flex-col  mt-10 md:mt-0">
-          <div className="flex justify-center md:justify-start ">
-            <h2 className="font-bold text-3xl md:text-5xl">{product?.name}</h2>
-          </div>
-          <div>
-            {Array.from({ length: Number(product.star) }).map((star) => (
-              <p>*</p>
-            ))}
-          </div>
-          <div>{product.price} PKR</div>
-          <p>{product.description}</p>
-          <div className="flex flex-col gap-4">
-            <div>Choose Colors</div>
-            <div className="flex gap-4">
-              {[...new Set(product?.variants?.map((v) => v.color))].map(
-                (color) => {
-                  const disabled = !availableColors.includes(color);
+    <div className="bg-white">
+      {!loading ? (
+        <Wrapper className="py-10 md:py-20">
+          <div className="flex flex-col lg:flex-row gap-12">
+            {/* Image Section */}
+            <div className="w-full lg:w-1/2">
+              <div className="relative aspect-[4/5] rounded-[40px] overflow-hidden bg-[#F0EEED] group shadow-sm hover:shadow-xl transition-all duration-500">
+                <Image
+                  src={ImageUrl}
+                  alt={product?.name || "product"}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  priority
+                />
+              </div>
+            </div>
 
-                  return (
-                    <div
-                      key={color}
-                      onClick={() => !disabled && handleColor(color)}
-                      style={{ backgroundColor: color }}
-                      className={`h-10 w-10 rounded-full border-2 flex items-center justify-center cursor-pointer
-                      ${selectedColor === color ? "border-black" : "border-gray-300"}
-                      ${disabled ? "opacity-30 cursor-not-allowed" : ""}
-                    `}
-                  >
-                      {selectedColor === color && (
-                        <Check size={22} color="white" />
-                      )}
-                    </div>
-                  );
-                },
-              )}
-               {error.colorSelctionError && <p>select color please</p>}
-            </div>
-          </div>
-          <div className="flex flex-col gap-4">
-            <div>Choose Size</div>
-            <div className="flex gap-4">
-              {[...new Set(product?.variants?.map((v) => v.size))].map(
-                (size) => {
-                  const disabled = !availableSizes.includes(size);
+            {/* Info Section */}
+            <div className="w-full lg:w-1/2 flex flex-col gap-8">
+              <div className="space-y-4">
+                <h1 className="font-black text-4xl md:text-5xl lg:text-6xl uppercase tracking-tighter leading-tight">
+                  {product?.name}
+                </h1>
+                
+                <div className="flex items-center gap-3">
+                  <div className="flex gap-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <Star 
+                        key={i} 
+                        size={20} 
+                        className={`${i < Math.floor(Number(product.star) || 0) ? "fill-yellow-400 text-yellow-400" : "text-gray-200"}`} 
+                      />
+                    ))}
+                  </div>
+                  <span className="text-sm text-gray-500 font-medium">({product.star}/5)</span>
+                </div>
 
-                  return (
-                    <div
-                      key={size}
-                      onClick={() => !disabled && handleSize(size)}
-                      className={`px-4 py-2 rounded-full border cursor-pointer
-                      ${selectedSize === size ? "bg-black text-white" : "border-gray-300"}
-                      ${disabled ? "opacity-30 cursor-not-allowed" : ""}
-                    `}
-                    >
-                      {size}
-                    </div>
-                  );
-                },
-              )}
-              {error.sizeSelectionError && <p>select color please</p>}
+                <div className="text-3xl md:text-4xl font-bold tracking-tight">
+                  {product.price} PKR
+                </div>
+
+                <p className="text-gray-500 text-lg leading-relaxed max-w-xl">
+                  {product.description || "Experience the perfect blend of style and comfort with our latest collection."}
+                </p>
+              </div>
+
+              <Separator className="bg-gray-100" />
+
+              {/* Colors */}
+              <div className="space-y-4">
+                <div className="flex  justify-between items-center">
+                  <span className="text-sm font-bold uppercase tracking-widest text-gray-400">Select Colors</span>
+                </div>
+                <div className="flex flex-wrap gap-4">
+                  {[...new Set(product?.variants?.map((v) => v.color))].map((color) => {
+                    const disabled = !availableColors.includes(color);
+                    return (
+                      <div
+                        key={color}
+                        onClick={() => !disabled && handleColor(color)}
+                        style={{ backgroundColor: color }}
+                        className={`h-10 w-10 rounded-full border-2 flex items-center justify-center cursor-pointer transition-all duration-300 transform active:scale-90
+                          ${selectedColor === color ? "ring-2 ring-offset-2 ring-black border-black scale-110" : "border-gray-200"}
+                          ${disabled ? "opacity-20 cursor-not-allowed grayscale" : "hover:scale-110 hover:shadow-md"}
+                        `}
+                      >
+                        {selectedColor === color && (
+                          <Check size={18} className={color.toLowerCase() === 'white' || color.toLowerCase() === '#ffffff' ? "text-black" : "text-white"} />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                {error.colorSelctionError && <span className="text-red-500 text-xs font-bold animate-pulse">Please select a color</span>}
+
+              </div>
+
+              {/* Sizes */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-bold uppercase tracking-widest text-gray-400">Choose Size</span>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  {[...new Set(product?.variants?.map((v) => v.size))].map((size) => {
+                    const disabled = !availableSizes.includes(size);
+                    return (
+                      <div
+                        key={size}
+                        onClick={() => !disabled && handleSize(size)}
+                        className={`px-8 py-3 rounded-full border-2 text-sm font-bold transition-all duration-300 transform active:scale-95 cursor-pointer
+                          ${selectedSize === size ? "bg-black text-white border-black shadow-lg" : "bg-[#F0F0F0] text-gray-500 border-transparent hover:border-black/20"}
+                          ${disabled ? "opacity-20 cursor-not-allowed border-dashed" : "hover:scale-105"}
+                        `}
+                      >
+                        {size}
+                      </div>
+                    );
+                  })}
+                  </div>
+                  {error.sizeSelectionError && <span className="text-red-500 text-xs font-bold animate-pulse">Please select a size</span>}
+              </div>
+
+              <Separator className="bg-gray-100" />
+
+              {/* Actions */}
+              <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
+                <div className="w-full sm:w-auto">
+                  <Counter number={qauntity} setNumber={handleMinMaxChange} />
+                </div>
+                <Button
+                  onClick={addItemsToCart}
+                  className="w-full sm:flex-1 bg-black text-white py-8 rounded-full text-lg font-bold hover:bg-gray-900 shadow-xl hover:shadow-2xl transition-all duration-300 transform active:scale-95"
+                >
+                  Add to Cart
+                </Button>
+              </div>
             </div>
           </div>
-          <div className="flex justify-between item ">
-            <div>
-              <Counter number={qauntity} setNumber={handleMinMaxChange} />
-            </div>
-            <Button
-              onClick={addItemsToCart}
-              className="px-20 sm:px-40 sm:py-5 md:px-20 md:py-6  lg:px-40  rounded-3xl cursor-pointer"
-            >
-              Add to cart
-            </Button>
-          </div>
-        </CardContent>
-      </Wrapper>: <div className="w-full h-screen flex justify-center items-center">
-          <Spinner size={80}/>
-          </div>}
-    </Card>
+        </Wrapper>
+      ) : (
+        <div className="w-full h-screen flex justify-center items-center">
+          <Spinner size={60} />
+        </div>
+      )}
+    </div>
   );
 }
+

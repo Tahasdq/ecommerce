@@ -2,12 +2,6 @@ import { itemTypes, SelectedColor, SelectedSize } from "@/types/types";
 
 export const items : itemTypes[] = [
     {
-      name:"Shop",
-      trigger:true,
-      links :["Links"],
-      href:"#"
-    },
-    {
       name:"On Sale",
        trigger:false,
        href:"/products?sales"

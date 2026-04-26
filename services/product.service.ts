@@ -10,6 +10,7 @@ interface FilterParams {
     minPrice?: number;
     maxPrice?: number;
     sizes?: string[];
+    search?: string;
 }
 
 class ProductService extends BaseService{
@@ -33,6 +34,9 @@ class ProductService extends BaseService{
         }
         if (filters.sizes && filters.sizes.length > 0) {
             params.append('sizes', filters.sizes.join(','));
+        }
+        if (filters.search) {
+            params.append('search', filters.search);
         }
         
         return this.get(`${GET_ALL_PRODUCTS}?${params.toString()}`)

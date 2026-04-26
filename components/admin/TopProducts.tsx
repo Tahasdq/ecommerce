@@ -1,14 +1,15 @@
 import { Progress } from "@/components/ui/progress";
 
-const products = [
-  { name: "Premium Headphones", sales: 234, revenue: "$11,700", percentage: 85 },
-  { name: "Wireless Keyboard", sales: 189, revenue: "$9,450", percentage: 72 },
-  { name: "USB-C Hub Pro", sales: 156, revenue: "$7,800", percentage: 60 },
-  { name: "Mechanical Mouse", sales: 128, revenue: "$6,400", percentage: 52 },
-  { name: "Monitor Stand", sales: 98, revenue: "$4,900", percentage: 40 },
-];
+// const products = [
+//   { name: "Premium Headphones", sales: 234, revenue: "$11,700", percentage: 85 },
+//   { name: "Wireless Keyboard", sales: 189, revenue: "$9,450", percentage: 72 },
+//   { name: "USB-C Hub Pro", sales: 156, revenue: "$7,800", percentage: 60 },
+//   { name: "Mechanical Mouse", sales: 128, revenue: "$6,400", percentage: 52 },
+//   { name: "Monitor Stand", sales: 98, revenue: "$4,900", percentage: 40 },
+// ];
 
-export function TopProducts() {
+export function TopProducts({topProducts}) {
+  console.log("topProducts",topProducts)
   return (
     <div className="bg-card rounded-lg border border-border">
       <div className="p-6 border-b border-border">
@@ -16,7 +17,7 @@ export function TopProducts() {
         <p className="text-sm text-muted-foreground">Best selling products this month</p>
       </div>
       <div className="p-6 space-y-5">
-        {products.map((product, index) => (
+        {topProducts && topProducts?.map((product, index) => (
           <div key={product.name} className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -24,11 +25,11 @@ export function TopProducts() {
                   {index + 1}
                 </div>
                 <div>
-                  <p className="font-medium text-foreground">{product.name}</p>
-                  <p className="text-xs text-muted-foreground">{product.sales} sales</p>
+                  <p className="font-medium text-foreground">{product.productName}</p>
+                  <p className="text-xs text-muted-foreground">{product.totalSales} sales</p>
                 </div>
               </div>
-              <span className="font-semibold text-foreground">{product.revenue}</span>
+              <span className="font-semibold text-foreground">{product.totalRevenue}</span>
             </div>
             <Progress value={product.percentage} className="h-2" />
           </div>
