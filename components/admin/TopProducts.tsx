@@ -10,9 +10,10 @@ import { Progress } from "@/components/ui/progress";
 
 interface TopProduct {
   productName: string;
-  totalSales: number;
-  totalRevenue: string | number;
-  percentage: number;
+  totalSales?: number;
+  totalOrders?: number;
+  totalRevenue?: string | number;
+  percentage?: number;
 }
 
 interface TopProductsProps {
@@ -37,12 +38,18 @@ export function TopProducts({ topProducts }: TopProductsProps) {
                 </div>
                 <div>
                   <p className="font-medium text-foreground">{product.productName}</p>
-                  <p className="text-xs text-muted-foreground">{product.totalSales} sales</p>
+                  <p className="text-xs text-muted-foreground">
+                    {product.totalSales || product.totalOrders || 0} sales
+                  </p>
                 </div>
               </div>
-              <span className="font-semibold text-foreground">{product.totalRevenue}</span>
+              <span className="font-semibold text-foreground">
+                {product.totalRevenue || "N/A"}
+              </span>
             </div>
-            <Progress value={product.percentage} className="h-2" />
+            {product.percentage !== undefined && (
+              <Progress value={product.percentage} className="h-2" />
+            )}
           </div>
         ))}
       </div>
