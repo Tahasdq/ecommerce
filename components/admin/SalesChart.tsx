@@ -12,7 +12,7 @@ import {
 
 
 
-export function SalesChart({totalSalesPerMonth}) {
+export function SalesChart({totalSalesPerMonth}:any) {
   return (
     <div className="bg-card rounded-lg border border-border p-6">
       <div className="mb-6">

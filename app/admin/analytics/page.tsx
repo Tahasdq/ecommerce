@@ -34,6 +34,21 @@ const topPages = [
   { page: "/products/mouse", views: 6123, conversion: 3.2 },
 ];
 
+const totalSalesPerMonth = [
+  { month: "Jan", totalSales: 40000 },
+  { month: "Feb", totalSales: 30000 },
+  { month: "Mar", totalSales: 20000 },
+  { month: "Apr", totalSales: 27800 },
+  { month: "May", totalSales: 18900 },
+  { month: "Jun", totalSales: 23900 },
+  { month: "Jul", totalSales: 34900 },
+  { month: "Aug", totalSales: 40000 },
+  { month: "Sep", totalSales: 29000 },
+  { month: "Oct", totalSales: 38000 },
+  { month: "Nov", totalSales: 48000 },
+  { month: "Dec", totalSales: 52000 },
+];
+
 export default function AnalyticsPage() {
   return (
     <div className="min-h-screen">
@@ -100,7 +115,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Sales Overview */}
-        <SalesChart />
+        <SalesChart totalSalesPerMonth={totalSalesPerMonth} />
 
         {/* Top Pages */}
         <div className="bg-card rounded-lg border border-border">

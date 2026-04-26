@@ -8,8 +8,19 @@ import { Progress } from "@/components/ui/progress";
 //   { name: "Monitor Stand", sales: 98, revenue: "$4,900", percentage: 40 },
 // ];
 
-export function TopProducts({topProducts}) {
-  console.log("topProducts",topProducts)
+interface TopProduct {
+  productName: string;
+  totalSales: number;
+  totalRevenue: string | number;
+  percentage: number;
+}
+
+interface TopProductsProps {
+  topProducts: TopProduct[];
+}
+
+export function TopProducts({ topProducts }: TopProductsProps) {
+  console.log("topProducts", topProducts);
   return (
     <div className="bg-card rounded-lg border border-border">
       <div className="p-6 border-b border-border">
@@ -17,8 +28,8 @@ export function TopProducts({topProducts}) {
         <p className="text-sm text-muted-foreground">Best selling products this month</p>
       </div>
       <div className="p-6 space-y-5">
-        {topProducts && topProducts?.map((product, index) => (
-          <div key={product.name} className="space-y-2">
+        {topProducts && topProducts?.map((product: TopProduct, index: number) => (
+          <div key={product.productName} className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-muted text-muted-foreground text-sm font-medium">
